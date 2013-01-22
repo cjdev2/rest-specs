@@ -1,0 +1,101 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+	<groupId>com.cj.restspecs</groupId>
+	<artifactId>rest-specs-pom</artifactId>
+	<version>6.0.0-SNAPSHOT</version>
+  </parent>
+
+    <artifactId>rest-specs-core</artifactId>
+    <packaging>jar</packaging>
+
+    <name>${pom.artifactId}</name>
+
+    <build>
+        <resources>
+            <resource><directory>src/main/javascript</directory></resource>
+        </resources>
+        <testResources>
+            <testResource><directory>src/test/resources</directory></testResource>
+            <testResource><directory>src/test/html</directory></testResource>
+            <testResource><directory>src/test/javascript</directory></testResource>
+            <testResource><directory>src/test/qunit</directory></testResource>
+        </testResources>
+
+        <pluginManagement>
+        	<plugins>
+        		<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+        		<plugin>
+        			<groupId>org.eclipse.m2e</groupId>
+        			<artifactId>lifecycle-mapping</artifactId>
+        			<version>1.0.0</version>
+        			<configuration>
+        				<lifecycleMappingMetadata>
+        					<pluginExecutions>
+        						<pluginExecution>
+        							<pluginExecutionFilter>
+        								<groupId>
+        									org.codehaus.gmaven
+        								</groupId>
+        								<artifactId>
+        									gmaven-plugin
+        								</artifactId>
+        								<versionRange>
+        									[1.2,)
+        								</versionRange>
+        								<goals>
+        									<goal>compile</goal>
+        									<goal>testCompile</goal>
+        								</goals>
+        							</pluginExecutionFilter>
+        							<action>
+        								<ignore></ignore>
+        							</action>
+        						</pluginExecution>
+        					</pluginExecutions>
+        				</lifecycleMappingMetadata>
+        			</configuration>
+        		</plugin>
+        	</plugins>
+        </pluginManagement>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-core-asl</artifactId>
+            <version>1.8.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-mapper-asl</artifactId>
+            <version>1.8.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>2.6</version>
+        </dependency>
+
+        <dependency>
+	      <groupId>com.googlecode</groupId>
+	      <artifactId>qunit-test-driver</artifactId>
+          <scope>test</scope>
+          <version>0.2.7</version>
+        </dependency>
+        <dependency><!-- NEEDED TO AVOID SOME WIERD HTMLUNIT ERROR -->
+            <groupId>net.sourceforge.htmlunit</groupId>
+            <artifactId>htmlunit</artifactId>
+            <version>2.9</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>

@@ -1,0 +1,36 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.cj.restspecs</groupId>
+		<artifactId>rest-specs-pom</artifactId>
+		<version>6.0.0-SNAPSHOT</version>
+	</parent>
+
+	<groupId>com.cj.restspecs.mojo</groupId>
+	<artifactId>rest-specs-mojo</artifactId>
+	<packaging>maven-plugin</packaging>
+
+	<name>${pom.artifactId}</name>
+
+	<dependencies>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.maven</groupId>
+			<artifactId>maven-plugin-api</artifactId>
+			<version>3.0.4</version>
+		</dependency>
+		<dependency>
+			<groupId>com.cj.restspecs</groupId>
+		    <artifactId>rest-specs-core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+	</dependencies>
+
+</project>
