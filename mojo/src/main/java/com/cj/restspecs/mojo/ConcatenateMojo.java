@@ -55,7 +55,7 @@ public class ConcatenateMojo extends AbstractRestSpecMojo {
     protected File destinationFile; 
 
     public void execute() throws MojoExecutionException, MojoFailureException {
-
+                
         List<File> jsons = new ArrayList<File>();
         for(final File sourceDir : findSourceDirectories()){
             jsons.addAll(getJsonFiles(sourceDir));

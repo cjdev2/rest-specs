@@ -37,14 +37,11 @@
  */
 package com.cj.restspecs.mojo;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -52,9 +49,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 public class ConcatenateMojoTest {
@@ -67,16 +62,40 @@ public class ConcatenateMojoTest {
     }
 
     @Test
-    public void testConcatenator() throws Exception {
+    public void theDestinationFileIsConfigurable() throws Exception {
         FilesystemScenario mavenProject = new FilesystemScenario();
+        
+        File destinationFile = new File(mavenProject.targetDir, "MyRestSpec.js");
         
         ConcatenateMojo mojo = new ConcatenateMojo();
         mojo.directories.add(relativePath(mavenProject.root, mavenProject.srcDir));
         mojo.basedir = mavenProject.root;
-        mojo.destinationFile = mavenProject.target;
+        mojo.destinationFile = destinationFile;
         mojo.execute();
         
-        String fileContents = FileUtils.readFileToString(mavenProject.target);
+        String fileContents = FileUtils.readFileToString(destinationFile);
+        //target should contain strings apple, root, banana, but not cat.
+        assertTrue(fileContents.contains("apple"));
+        assertTrue(fileContents.contains("banana"));
+        assertTrue(fileContents.contains("root"));
+        assertFalse("The matcher accepted something that doesn't end in .spec.js", fileContents.contains("cat"));
+        assertEquals(1, mavenProject.targetDir.list().length);
+
+    }
+    
+    @Test
+    public void testConcatenator() throws Exception {
+        FilesystemScenario mavenProject = new FilesystemScenario();
+        
+        File destinationFile = new File(mavenProject.targetDir, "RestSpec.js");
+        
+        ConcatenateMojo mojo = new ConcatenateMojo();
+        mojo.directories.add(relativePath(mavenProject.root, mavenProject.srcDir));
+        mojo.basedir = mavenProject.root;
+        mojo.destinationFile = destinationFile;
+        mojo.execute();
+        
+        String fileContents = FileUtils.readFileToString(destinationFile);
         //target should contain strings apple, root, banana, but not cat.
         assertTrue(fileContents.contains("apple"));
         assertTrue(fileContents.contains("banana"));
@@ -90,16 +109,18 @@ public class ConcatenateMojoTest {
         // GIVEN
         FilesystemScenario mavenProject = new FilesystemScenario();
 
+        File destinationFile = new File(mavenProject.targetDir, "RestSpec.js");
+        
         ConcatenateMojo mojo = new ConcatenateMojo();
         mojo.directories.add(relativePath(mavenProject.root, mavenProject.srcDir));
         mojo.basedir = mavenProject.root;
-        mojo.destinationFile = mavenProject.target;
+        mojo.destinationFile = destinationFile;
 
         // WHEN
         mojo.execute();
         
         // THEN
-        String[] actualLines = FileUtils.readLines(mavenProject.target).toArray(new String[]{});
+        String[] actualLines = FileUtils.readLines(destinationFile).toArray(new String[]{});
         String[] expectedHeaderLines = {
                 "/*jslint newcap: false*/",
                 "/*global RestSpec:true */",
@@ -141,7 +162,7 @@ public class ConcatenateMojoTest {
     private static class FilesystemScenario {
         private static List<FilesystemScenario> instances = new ArrayList<FilesystemScenario>();
         
-        final File root, srcDir, target;
+        final File root, srcDir, targetDir;
 
         public FilesystemScenario() {
             try{
@@ -165,7 +186,7 @@ public class ConcatenateMojoTest {
                 writeToFile(fileInB,"banana");
                 writeToFile(fileInBNotSpec,"cat");
 
-                target = new File(root,"target.tmp.js");
+                targetDir = mkdirs(new File(root,"target"));
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
