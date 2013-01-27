@@ -64,96 +64,96 @@ public class RestSpec {
     private final Loader loader;
 
     public RestSpec(String specName) {
-	this(specName, new ClasspathLoader());
+        this(specName, new ClasspathLoader());
     }
 
     public RestSpec(String specName, Loader loader){
-	this.loader = loader;
-	InputStream is = loader.load(specName);
-	if(is==null) throw new RuntimeException("Could not find file named " + specName);
+        this.loader = loader;
+        InputStream is = loader.load(specName);
+        if(is==null) throw new RuntimeException("Could not find file named " + specName);
 
-	try{
-	    ObjectMapper mapper = new ObjectMapper();
-	    root = mapper.readValue(is, JsonNode.class);
+        try{
+            ObjectMapper mapper = new ObjectMapper();
+            root = mapper.readValue(is, JsonNode.class);
 
-	    name = root.path("name").getValueAsText();
-	    url = root.path("url").getValueAsText();
+            name = root.path("name").getValueAsText();
+            url = root.path("url").getValueAsText();
 
-	    blowUpIfThereAreFieldsBesidesThese(root, Arrays.asList(
-		    "name",
-		    "url",
-		    "request",
-		    "response"
-		    ));
-	    blowUpIfThereAreFieldsBesidesThese(root.path("response"), Arrays.asList(
-		    "statusCode",
-		    "header",
-		    "representation",
-		    "representation-ref"
-		    ));
-	}catch(Exception e){
-	    throw new RuntimeException(e);
-	}
+            blowUpIfThereAreFieldsBesidesThese(root, Arrays.asList(
+                    "name",
+                    "url",
+                    "request",
+                    "response"
+                    ));
+            blowUpIfThereAreFieldsBesidesThese(root.path("response"), Arrays.asList(
+                    "statusCode",
+                    "header",
+                    "representation",
+                    "representation-ref"
+                    ));
+        }catch(Exception e){
+            throw new RuntimeException(e);
+        }
     }
 
     private void blowUpIfThereAreFieldsBesidesThese(JsonNode root, List<String> allowedNodes) {
-	Iterator<String> fields = root.getFieldNames();
-	while(fields.hasNext()){
-	    String field = fields.next();
-	    if (!allowedNodes.contains(field)) {
-		throw new RuntimeException("Field '" + field + "' is not allowed");
-	    }
-	}
+        Iterator<String> fields = root.getFieldNames();
+        while(fields.hasNext()){
+            String field = fields.next();
+            if (!allowedNodes.contains(field)) {
+                throw new RuntimeException("Field '" + field + "' is not allowed");
+            }
+        }
     }
 
     public String name() {
-	return name;
+        return name;
     }
 
     public String pathMinusQueryStringAndFragment(){
-	return parseUrl()[0];
+        return parseUrl()[0];
     }
 
     private String[] parseUrl(){
-	int delimiterPos = url.indexOf('?');
-	if(delimiterPos == -1){
-	    return new String[]{url, ""};
-	}else{
-	    return new String[]{
-		    url.substring(0, delimiterPos),
-		    url.substring(delimiterPos)
-	    };
-	}
+        int delimiterPos = url.indexOf('?');
+        if(delimiterPos == -1){
+            return new String[]{url, ""};
+        }else{
+            return new String[]{
+                    url.substring(0, delimiterPos),
+                    url.substring(delimiterPos)
+            };
+        }
     }
 
     public Map<String, String> queryParams(){ 
-	try{
+        try{
 
-	    Map<String, String> queryParams = new HashMap<String, String>();
-	    String query = queryString();
-	    if(query!=""){
-		for (String param : query.substring(1).split("&")) {
-		    String[] pair = param.split("=");
-		    String key = URLDecoder.decode(pair[0], "UTF-8");
-		    String value =  null;
-		    if(pair.length > 1)
-			value = URLDecoder.decode(pair[1], "UTF-8");
-		    queryParams.put(key, value);
-		}
-	    }
+            Map<String, String> queryParams = new HashMap<String, String>();
+            String query = queryString();
+            if(query!=""){
+                for (String param : query.substring(1).split("&")) {
+                    String[] pair = param.split("=");
+                    String key = URLDecoder.decode(pair[0], "UTF-8");
+                    String value =  null;
+                    if(pair.length > 1)
+                        value = URLDecoder.decode(pair[1], "UTF-8");
+                    queryParams.put(key, value);
+                }
+            }
 
-	    return queryParams;
-	}catch(Exception e){
-	    throw new RuntimeException(e);
-	}
+            return queryParams;
+        }catch(Exception e){
+            throw new RuntimeException(e);
+        }
     }
 
     public String queryString(){
-	return parseUrl()[1];
+        return parseUrl()[1];
     }
 
     public String path() {
-	return url;
+        return url;
     }
 
     public String getPathReplacedWith(Map<String, ?> replacements) {
@@ -179,41 +179,41 @@ public class RestSpec {
 
 
     public Response response() {
-	final JsonNode responseNode = root.path("response");
-	if (responseNode.isMissingNode())
-	    throw new RuntimeException("Spec is missing a 'response'");
+        final JsonNode responseNode = root.path("response");
+        if (responseNode.isMissingNode())
+            throw new RuntimeException("Spec is missing a 'response'");
 
-	final Header theHeader = new HeaderImpl(responseNode.path("header"));
+        final Header theHeader = new HeaderImpl(responseNode.path("header"));
 
-	return new Response(){
+        return new Response(){
 
-	    public int statusCode() {
-		return responseNode.path("statusCode").getIntValue();
-	    }
+            public int statusCode() {
+                return responseNode.path("statusCode").getIntValue();
+            }
 
-	    private <T> T nthOrElse(int n, T defaultValue, List<T> list){
-		if(list.size()>0){
-		    return list.get(n);
-		}else{
-		    return defaultValue;
-		}
-	    }
+            private <T> T nthOrElse(int n, T defaultValue, List<T> list){
+                if(list.size()>0){
+                    return list.get(n);
+                }else{
+                    return defaultValue;
+                }
+            }
 
-	    public Representation representation() {
-		if(responseNode.path("representation").isMissingNode() && responseNode.path("representation-ref").isMissingNode())
-		    return null;
+            public Representation representation() {
+                if(responseNode.path("representation").isMissingNode() && responseNode.path("representation-ref").isMissingNode())
+                    return null;
 
 
 
-		String contentType = nthOrElse(0, "", theHeader.fieldsNamed("Content-Type"));
+                String contentType = nthOrElse(0, "", theHeader.fieldsNamed("Content-Type"));
 
-		return RepresentationFactory.createRepresentation(responseNode, loader, contentType);
-	    }
+                return RepresentationFactory.createRepresentation(responseNode, loader, contentType);
+            }
 
-	    public Header header() {
-		return theHeader;
-	    }
-	}; 
+            public Header header() {
+                return theHeader;
+            }
+        }; 
     }
 }
 
@@ -221,16 +221,16 @@ class HeaderImpl implements Header {
     JsonNode headerNode;
 
     HeaderImpl(JsonNode headerNode){
-	this.headerNode = headerNode;
+        this.headerNode = headerNode;
     }
 
     public List<String> fieldsNamed(String name){
-	
-	List<String> fields = new ArrayList<String>();
-	for(JsonNode node : headerNode){
-	    fields.add(node.getValueAsText());
-	}
-	return  fields;
+
+        List<String> fields = new ArrayList<String>();
+        for(JsonNode node : headerNode){
+            fields.add(node.getValueAsText());
+        }
+        return  fields;
     }
 }
 
@@ -238,38 +238,38 @@ class HeaderImpl implements Header {
 class RepresentationFactory {
     static Representation createRepresentation(final JsonNode node, final Loader loader, final String contentType) {
 
-	if(node.path("representation").isMissingNode() && node.path("representation-ref").isMissingNode()) {
-	    return null;
-	}
+        if(node.path("representation").isMissingNode() && node.path("representation-ref").isMissingNode()) {
+            return null;
+        }
 
-	return  new Representation(){
-	    public String contentType() {
-		return contentType;
-	    }
+        return  new Representation(){
+            public String contentType() {
+                return contentType;
+            }
 
-	    public InputStream data() {
+            public InputStream data() {
 
-		JsonNode representation = node.path("representation");
-		if(!representation.isMissingNode()) {
-		    return IOUtils.toInputStream(representation.getValueAsText());
-		}
-		JsonNode repRef = node.path("representation-ref");
-		if(!repRef.isMissingNode()) {
-		    String resourcePath = repRef.getValueAsText();
-		    return loader.load(resourcePath);
-		}
-		throw new IllegalStateException("rest spec does not have representation or representation-ref response node");
-	    }
-	    public String asText() {
-		try {
-		    String textRepresentation = IOUtils.toString(data());
-		    textRepresentation = textRepresentation.replaceAll("\n\\$", "");		//remove newline from last line of response spec
-		    return textRepresentation;
-		} catch (IOException ioe) {  /*can't do that*/ }
-		return null;
-	    }
+                JsonNode representation = node.path("representation");
+                if(!representation.isMissingNode()) {
+                    return IOUtils.toInputStream(representation.getValueAsText());
+                }
+                JsonNode repRef = node.path("representation-ref");
+                if(!repRef.isMissingNode()) {
+                    String resourcePath = repRef.getValueAsText();
+                    return loader.load(resourcePath);
+                }
+                throw new IllegalStateException("rest spec does not have representation or representation-ref response node");
+            }
+            public String asText() {
+                try {
+                    String textRepresentation = IOUtils.toString(data());
+                    textRepresentation = textRepresentation.replaceAll("\n\\$", "");		//remove newline from last line of response spec
+                    return textRepresentation;
+                } catch (IOException ioe) {  /*can't do that*/ }
+                return null;
+            }
 
-	};
+        };
 
     }
 }
