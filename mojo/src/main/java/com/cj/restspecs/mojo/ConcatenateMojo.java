@@ -49,7 +49,7 @@ import org.apache.maven.plugin.MojoFailureException;
  */
 public class ConcatenateMojo extends AbstractRestSpecMojo {
     /** 
-     * @parameter expression="${project.build.directory}/RestSpec.js" 
+     * @parameter expression="${project.build.outputDirectory}/RestSpec.js" 
      * @required 
      */ 
     protected File destinationFile; 
