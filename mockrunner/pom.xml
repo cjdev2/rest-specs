@@ -18,11 +18,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 		  <scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.10</version>
-		</dependency>
-		<dependency>
 			<groupId>com.cj.restspecs</groupId>
 		    <artifactId>rest-specs-core</artifactId>
 			<version>${project.version}</version>
