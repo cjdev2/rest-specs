@@ -156,27 +156,24 @@ public class RestSpec {
 	return url;
     }
 
-    public String getPathReplacedWith(Map<String, String> replacements) {
-	String urlWithReplacedValues = url;
-	for(Map.Entry<String, String> entry : replacements.entrySet()) {
-	    urlWithReplacedValues = urlWithReplacedValues.replace(entry.getKey().toString(), entry.getValue().toString());
-	}
-	return urlWithReplacedValues;
+    public String getPathReplacedWith(Map<String, ?> replacements) {
+        String urlWithReplacedValues = url;
+        for(Map.Entry<String, ?> entry : replacements.entrySet()) {
+            urlWithReplacedValues = urlWithReplacedValues.replace(entry.getKey().toString(), entry.getValue().toString());
+        }
+        return urlWithReplacedValues;
     }
 
     public Request request() {
+        return new Request(){
+            public String method() {
+                return root.path("request").path("method").getValueAsText();
+            }
 
-
-
-	return new Request(){
-	    public String method() {
-		return root.path("request").path("method").getValueAsText();
-	    }
-
-	    public Representation representation() {
-		return RepresentationFactory.createRepresentation(root.path("request"), loader, "");
-	    }
-	};
+            public Representation representation() {
+                return RepresentationFactory.createRepresentation(root.path("request"), loader, "");
+            }
+        };
     }
 
 

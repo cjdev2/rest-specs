@@ -9,7 +9,6 @@
   </parent>
 
     <artifactId>rest-specs-core</artifactId>
-    <packaging>jar</packaging>
 
     <name>${pom.artifactId}</name>
 

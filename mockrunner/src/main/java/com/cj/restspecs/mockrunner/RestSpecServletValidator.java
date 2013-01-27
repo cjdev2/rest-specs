@@ -60,22 +60,22 @@ public class RestSpecServletValidator {
 	
 	public void assertNoViolations(){
 	    if(violations.size()>0){
-		StringBuffer text = new StringBuffer();
-		for(Violation violation : violations){
-		    text.append(violation.description + "\n");
-		}
-		throw new RuntimeException(text.toString());
+	        StringBuffer text = new StringBuffer();
+	        for(Violation violation : violations){
+	            text.append(violation.description + "\n");
+	        }
+	        throw new RuntimeException(text.toString());
 	    }
 	}
     }
-    
-    public static class Violation {
-	public final String description;
 
-	public Violation(String description) {
-	    super();
-	    this.description = description;
-	}
+    public static class Violation {
+        public final String description;
+
+        public Violation(String description) {
+            super();
+            this.description = description;
+        }
     }
     
     public ValidationResult validate(RestSpec rs, HttpServlet testSubject) throws Exception {
