@@ -39,7 +39,7 @@ package cj.restspecifications;
 
 import org.junit.Test;
 
-import com.googlecode.qunitTestDriver.QUnitTestDriver;
+import com.cj.qunitTestDriver.QUnitTestDriver;
 
 public class RestSpecQUnitTest {
     @Test

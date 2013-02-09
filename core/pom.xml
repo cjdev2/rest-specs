@@ -85,10 +85,10 @@
         </dependency>
 
         <dependency>
-	      <groupId>com.googlecode</groupId>
+	      <groupId>com.cj.qunit-test-driver</groupId>
 	      <artifactId>qunit-test-driver</artifactId>
-          <scope>test</scope>
-          <version>0.2.7</version>
+              <scope>test</scope>
+              <version>1.3.6-SNAPSHOT</version>
         </dependency>
         <dependency><!-- NEEDED TO AVOID SOME WIERD HTMLUNIT ERROR -->
             <groupId>net.sourceforge.htmlunit</groupId>
