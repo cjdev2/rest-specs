@@ -40,5 +40,6 @@ package cj.restspecs.core.model;
 import java.util.List;
 
 public interface Header {
+    List<String> fieldNames();
     List<String> fieldsNamed(String name);
 }

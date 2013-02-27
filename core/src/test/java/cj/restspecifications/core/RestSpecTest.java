@@ -43,6 +43,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 
@@ -50,6 +51,7 @@ import org.junit.Test;
 
 import cj.restspecs.core.RestSpec;
 import cj.restspecs.core.io.Loader;
+import cj.restspecs.core.model.Header;
 
 public class RestSpecTest {
     
@@ -221,6 +223,56 @@ public class RestSpecTest {
 
         assertEquals("PUT",spec.request().method());
         assertEquals("the resource for fun", spec.name());
+    }
+    
+    @Test
+    public void givesUsersAWayToListTheHeaders() throws Exception {
+            // GIVEN: a spec for a get request with no representation
+            final String specJson =( 
+                "{\n" + 
+                "    \"name\":\"some spec\",\n" + 
+                "    \"url\":\"/some/path\",\n" + 
+                "    \"request\": {\n" + 
+                "        \"method\": \"GET\"\n" + 
+                "    },\n" + 
+                "    \"response\":{\n" + 
+                "        \"statusCode\": 201,\n" + 
+                "        \"header\": {\n" + 
+                "            \"FooName\": \"foo value\",\n" + 
+                "            \"BarName\": \"bar value\"\n" + 
+                "        }\n" + 
+                "    }\n" + 
+                "}\n");
+            System.out.println(specJson);
+            Loader dummyLoader =  new Loader(){
+                public InputStream load(String name){
+                    return new ByteArrayInputStream(specJson.getBytes());
+                }
+            };
+
+            // WHEN: you read it with a 'RestSpec' instance
+            RestSpec spec = new RestSpec("dummyName", dummyLoader);
+
+            // THEN: you should be able to figure out whether it has a representation on the request
+            String[][] expected = {{"FooName", "foo value"},
+                                    {"BarName", "bar value"}};
+
+            assertHeaders(expected, spec.response().header());
+    }
+
+    private void assertHeaders(String[][] expected, Header actual) {
+        List<String> names = actual.fieldNames();
+        assertEquals(expected.length, names.size());
+        for(int x=0;x<expected.length;x++){
+            String expectedName = expected[x][0];
+            String actualName = names.get(x);
+            assertEquals(expectedName, actualName);
+            
+            String expectedValue = expected[x][1];
+            List<String> actualValues = actual.fieldsNamed(expectedName);
+            assertEquals(1, actualValues.size());
+            assertEquals(expectedValue, actualValues.get(0));
+        }
     }
     
     @Test

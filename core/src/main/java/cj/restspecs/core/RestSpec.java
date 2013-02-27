@@ -42,6 +42,7 @@ import java.io.InputStream;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -223,14 +224,27 @@ class HeaderImpl implements Header {
     HeaderImpl(JsonNode headerNode){
         this.headerNode = headerNode;
     }
+    
+    public List<String> fieldNames() {
+
+        List<String> results = new ArrayList<String>();
+        Iterator<String> names = headerNode.getFieldNames();
+        while(names.hasNext()){
+            results.add(names.next());
+        }
+        return  results;
+    }
 
     public List<String> fieldsNamed(String name){
-
-        List<String> fields = new ArrayList<String>();
-        for(JsonNode node : headerNode){
-            fields.add(node.getValueAsText());
+        List<String> results = new ArrayList<String>();
+        final Iterator<Map.Entry<String, JsonNode>> items = headerNode.getFields();
+        while(items.hasNext()){
+            Map.Entry<String, JsonNode> field = items.next();
+            if(field.getKey().equals(name)){
+                results.add(field.getValue().getTextValue());
+            }
         }
-        return  fields;
+        return results;
     }
 }
 
