@@ -77,6 +77,14 @@ public class RestSpecServletValidator {
             this.description = description;
         }
     }
+    
+    private String stripLeadingQuestionMark(String query){
+        if(query!=null && query.startsWith("?")){
+            return query.substring(1);
+        }else{
+            return query;
+        }
+    }
 
     public ValidationResult validate(RestSpec rs, HttpServlet testSubject) throws Exception {
 
@@ -85,7 +93,7 @@ public class RestSpecServletValidator {
 
 
         req.setPathInfo(rs.pathMinusQueryStringAndFragment());
-        req.setQueryString(rs.queryString());
+        req.setQueryString(stripLeadingQuestionMark(rs.queryString()));
 
         for(Map.Entry<String, String> next : rs.queryParams().entrySet()){
             req.setupAddParameter(next.getKey(), next.getValue());
