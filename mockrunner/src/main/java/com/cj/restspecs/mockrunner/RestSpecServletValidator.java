@@ -50,23 +50,23 @@ import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
 public class RestSpecServletValidator {
-    
+
     public static class ValidationResult {
-	public final List<Violation> violations;
-	
-	public ValidationResult(List<Violation> violations) {
-	    this.violations = Collections.unmodifiableList(violations);
-	}
-	
-	public void assertNoViolations(){
-	    if(violations.size()>0){
-	        StringBuffer text = new StringBuffer();
-	        for(Violation violation : violations){
-	            text.append(violation.description + "\n");
-	        }
-	        throw new RuntimeException(text.toString());
-	    }
-	}
+        public final List<Violation> violations;
+
+        public ValidationResult(List<Violation> violations) {
+            this.violations = Collections.unmodifiableList(violations);
+        }
+
+        public void assertNoViolations(){
+            if(violations.size()>0){
+                StringBuffer text = new StringBuffer();
+                for(Violation violation : violations){
+                    text.append(violation.description + "\n");
+                }
+                throw new RuntimeException(text.toString());
+            }
+        }
     }
 
     public static class Violation {
@@ -77,50 +77,50 @@ public class RestSpecServletValidator {
             this.description = description;
         }
     }
-    
-    public ValidationResult validate(RestSpec rs, HttpServlet testSubject) throws Exception {
-	
-	//given
-	MockHttpServletRequest req = new MockHttpServletRequest();
-	
-	
-	req.setPathInfo(rs.pathMinusQueryStringAndFragment());
-	req.setQueryString(rs.queryString());
-	
-	for(Map.Entry<String, String> next : rs.queryParams().entrySet()){
-	    req.setupAddParameter(next.getKey(), next.getValue());
-	}
-	req.setMethod(rs.request().method());
-	MockHttpServletResponse res = new MockHttpServletResponse();
-	
-	//when
-	testSubject.service(req, res);
-	
-	//then
-	
-	List<Violation> violations = new ArrayList<Violation>();
-	
-	if(rs.response().statusCode() != res.getStatusCode()){
-	    violations.add(new Violation("Status code should have been " + rs.response().statusCode() + " but was " + res.getStatusCode()));
-	}
-	
-	{
-	    final String expectedContentType = rs.response().representation().contentType(); 
-	    final String actualContentType = res.getHeader("Content-Type");
-	    if(!expectedContentType.equals(actualContentType)){
-		violations.add(new Violation("Content type of the response should have been  " + expectedContentType + " but was " + actualContentType));
-	    }
-	}
 
-	{ 
-	    final String expectedRepresentation = rs.response().representation().asText(); 
-	    final String actualRepresentation = res.getOutputStreamContent();
-	    if(!expectedRepresentation.equals(actualRepresentation)){
-		violations.add(new Violation("The response representation should have been " + expectedRepresentation + " but was " + actualRepresentation));
-	    }
-	}
-	
-	return new ValidationResult(violations);
+    public ValidationResult validate(RestSpec rs, HttpServlet testSubject) throws Exception {
+
+        //given
+        MockHttpServletRequest req = new MockHttpServletRequest();
+
+
+        req.setPathInfo(rs.pathMinusQueryStringAndFragment());
+        req.setQueryString(rs.queryString());
+
+        for(Map.Entry<String, String> next : rs.queryParams().entrySet()){
+            req.setupAddParameter(next.getKey(), next.getValue());
+        }
+        req.setMethod(rs.request().method());
+        MockHttpServletResponse res = new MockHttpServletResponse();
+
+        //when
+        testSubject.service(req, res);
+
+        //then
+
+        List<Violation> violations = new ArrayList<Violation>();
+
+        if(rs.response().statusCode() != res.getStatusCode()){
+            violations.add(new Violation("Status code should have been " + rs.response().statusCode() + " but was " + res.getStatusCode()));
+        }
+
+        {
+            final String expectedContentType = rs.response().representation().contentType(); 
+            final String actualContentType = res.getHeader("Content-Type");
+            if(!expectedContentType.equals(actualContentType)){
+                violations.add(new Violation("Content type of the response should have been  " + expectedContentType + " but was " + actualContentType));
+            }
+        }
+
+        { 
+            final String expectedRepresentation = rs.response().representation().asText(); 
+            final String actualRepresentation = res.getOutputStreamContent();
+            if(!expectedRepresentation.equals(actualRepresentation)){
+                violations.add(new Violation("The response representation should have been " + expectedRepresentation + " but was " + actualRepresentation));
+            }
+        }
+
+        return new ValidationResult(violations);
     }
 
 }
