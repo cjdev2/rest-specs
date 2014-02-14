@@ -37,12 +37,15 @@
  */
 package com.cj.restspecs.mockrunner;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServlet;
+
+import org.apache.commons.io.FileUtils;
 
 import cj.restspecs.core.RestSpec;
 
@@ -91,7 +94,11 @@ public class RestSpecServletValidator {
         //given
         MockHttpServletRequest req = new MockHttpServletRequest();
 
-
+        for(String name: rs.request().header().fieldNames()){
+            for(String value : rs.request().header().fieldsNamed(name)){
+                req.setHeader(name, value);
+            }
+        }
         req.setPathInfo(rs.pathMinusQueryStringAndFragment());
         req.setQueryString(stripLeadingQuestionMark(rs.queryString()));
 
@@ -111,23 +118,24 @@ public class RestSpecServletValidator {
         if(rs.response().statusCode() != res.getStatusCode()){
             violations.add(new Violation("Status code should have been " + rs.response().statusCode() + " but was " + res.getStatusCode()));
         }
+        if(rs.response().representation()!=null){
+            {
 
-        {
-            final String expectedContentType = rs.response().representation().contentType(); 
-            final String actualContentType = res.getHeader("Content-Type");
-            if(!expectedContentType.equals(actualContentType)){
-                violations.add(new Violation("Content type of the response should have been  " + expectedContentType + " but was " + actualContentType));
+                final String expectedContentType = rs.response().representation().contentType(); 
+                final String actualContentType = res.getHeader("Content-Type");
+                if(!expectedContentType.equals(actualContentType)){
+                    violations.add(new Violation("Content type of the response should have been  " + expectedContentType + " but was " + actualContentType));
+                }
+            }
+
+            { 
+                final String expectedRepresentation = rs.response().representation().asText(); 
+                final String actualRepresentation = res.getOutputStreamContent();
+                if(!expectedRepresentation.equals(actualRepresentation)){
+                    violations.add(new Violation("The response representation should have been " + expectedRepresentation + " but was " + actualRepresentation));
+                }
             }
         }
-
-        { 
-            final String expectedRepresentation = rs.response().representation().asText(); 
-            final String actualRepresentation = res.getOutputStreamContent();
-            if(!expectedRepresentation.equals(actualRepresentation)){
-                violations.add(new Violation("The response representation should have been " + expectedRepresentation + " but was " + actualRepresentation));
-            }
-        }
-
         return new ValidationResult(violations);
     }
 

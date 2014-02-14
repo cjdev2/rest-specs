@@ -40,4 +40,5 @@ package cj.restspecs.core.model;
 public interface Request {
     public String method();
     public Representation representation();
+    public Header header();
 }

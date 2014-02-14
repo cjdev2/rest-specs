@@ -233,7 +233,11 @@ public class RestSpecTest {
                 "    \"name\":\"some spec\",\n" + 
                 "    \"url\":\"/some/path\",\n" + 
                 "    \"request\": {\n" + 
-                "        \"method\": \"GET\"\n" + 
+                "        \"method\": \"GET\",\n" + 
+                "        \"header\": {\n" + 
+                "            \"Green Eggs\": \"I'm sam\",\n" + 
+                "            \"And Ham\": \"sam I am\"\n" + 
+                "        }\n" + 
                 "    },\n" + 
                 "    \"response\":{\n" + 
                 "        \"statusCode\": 201,\n" + 
@@ -250,14 +254,22 @@ public class RestSpecTest {
                 }
             };
 
-            // WHEN: you read it with a 'RestSpec' instance
+            // WHEN: 
             RestSpec spec = new RestSpec("dummyName", dummyLoader);
 
-            // THEN: you should be able to figure out whether it has a representation on the request
-            String[][] expected = {{"FooName", "foo value"},
+            // THEN: 
+            
+            String[][] expectedRequestHeaders = {
+                    {"Green Eggs", "I'm sam"},
+                    {"And Ham", "sam I am"}};
+
+            assertHeaders(expectedRequestHeaders, spec.request().header());
+            
+            String[][] expectedResponseHeaders = {
+                                    {"FooName", "foo value"},
                                     {"BarName", "bar value"}};
 
-            assertHeaders(expected, spec.response().header());
+            assertHeaders(expectedResponseHeaders, spec.response().header());
     }
 
     private void assertHeaders(String[][] expected, Header actual) {

@@ -167,12 +167,19 @@ public class RestSpec {
 
     public Request request() {
         return new Request(){
+
+            final JsonNode requestNode = root.path("request");
+            final Header theHeader = new HeaderImpl(requestNode.path("header"));
+            
             public String method() {
                 return root.path("request").path("method").getValueAsText();
             }
 
             public Representation representation() {
-                return RepresentationFactory.createRepresentation(root.path("request"), loader, "");
+                return RepresentationFactory.createRepresentation(requestNode, loader, "");
+            }
+            public Header header() {
+                return theHeader;
             }
         };
     }
