@@ -14,7 +14,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 		<dependency>
 		  <groupId>com.mockrunner</groupId>
 		  <artifactId>mockrunner</artifactId>
-		  <version>0.3.7</version>
+		  <version>0.3.1</version>
 		  <scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -29,4 +29,10 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 		    <scope>provided</scope>
 		</dependency>
 	</dependencies>
+    <repositories>
+        <repository>
+            <id>sonatype-staging</id>
+            <url>https://oss.sonatype.org/content/repositories/staging/</url>
+        </repository>
+    </repositories>
 </project>
