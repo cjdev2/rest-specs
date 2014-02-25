@@ -11,6 +11,7 @@
 		<module>core</module>
 		<module>mockrunner</module>
 		<module>mojo</module>
+		<module>server</module>
 	</modules>
 
 	<build>
