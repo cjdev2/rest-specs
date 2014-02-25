@@ -43,11 +43,21 @@ import org.httpobjects.Request
 import org.httpobjects.DSL._
 import java.io.{File => Path}
 import cj.restspecs.core.RestSpec
-
+import cj.restspecs.core.io.FilesystemLoader
+import java.net.URI
+import org.apache.commons.io.IOUtils
+import org.httpobjects.Response
+import org.httpobjects.ResponseCode
+import scala.collection.JavaConversions._
+import org.httpobjects.header.GenericHeaderField
+import org.httpobjects.Representation
+import java.io.FileInputStream
+import scala.collection.mutable.ListBuffer
 
 object RestSpecServer {
-    def findSpecs(dir:Path):Seq[Path] = {
-      val results = for(child <- dir.listFiles().toSeq) yield {
+    
+    private def findSpecs(dir:Path):Seq[Path] = {
+      val results = dir.listFiles().toSeq.map{child=>
         if(child.isDirectory()){
           findSpecs(child)
         } 
@@ -60,23 +70,114 @@ object RestSpecServer {
       
       results.flatten
     }
-  
+    
+    private def relativePath(a:Path, b:Path) = {
+      val aStr = a.getAbsolutePath()
+      val bStr = b.getAbsolutePath()
+      if(aStr.startsWith(bStr)) aStr.substring(bStr.length()) else aStr
+    }
+    
 	def main(args: Array[String]) {
-	  val specFiles = findSpecs(new Path("specs"))
+      val currentDirectory = new Path(System.getProperty("user.dir"))
+      
+      val pathOption = if(args.length > 0) Some(new Path(args(0))) else None
 	  
-	  new RestSpec("foo");
+	  val rootPath =  pathOption.getOrElse(currentDirectory)
+	
+	  val loader = new FilesystemLoader(rootPath)
+      val specFiles = findSpecs(rootPath)
+      
+      case class SpecWithFilesystemLocation (filesystemLocation:String, spec:RestSpec)
+      
+      val specFilePathsAndSpecs = specFiles.map{pathToFile=>
+        val specPath = relativePath(pathToFile, rootPath)
+        SpecWithFilesystemLocation(specPath, new RestSpec(specPath, loader))
+      }
 	  
-	  def respond(method:String, req:Request) = OK(Text("hi"))
+	  val specs = specFilePathsAndSpecs.map(_.spec)
+      
+	  println(s"Serving ${specs.length} specs")
+      
+	  def createHelpPage(httpMethod:String, req:Request) = {
+	    val query = req.query.toString
+        val path = req.path.toString
+	    val lines = specs.map{spec=>
+                          
+              val relativePathToSpec = specFilePathsAndSpecs.find(_.spec eq spec )
+              
+              s"""<a href="_specs/${relativePathToSpec.get.filesystemLocation}">${spec.name}</a> """ + spec.request.method + " <a href=\"" + spec.path + "\">" + spec.path + "</a>"
+            }
+            
+            val htmlContent = s"""
+                        <html><body>
+                            <h1>NO SPEC FOUND MATCHING $httpMethod $path $query\n</h1> 
+                            <p>Specs I know about are:</p>
+                            <ul>""" + lines.mkString("<li>", "</li><li>", "</li>") + """</ul>
+                        </body></html>"""
+            
+            INTERNAL_SERVER_ERROR(Html(htmlContent))
+	  }
 	  
-	  class RequestGlue(pathMapping:String) extends HttpObject(pathMapping) {
+      def respond(httpMethod:String, req:Request) = {
+        val query = req.query.toString
+        val path = req.path.toString
+        
+        
+        val methodAndPathAndQueryMatches = specs.filter{candidate=>
+          val p = new URI(candidate.path()).getPath()
+          val pathsMatch = path == p
+          val queriesMatch = query == candidate.queryString
+          val methodsMatch = candidate.request.method == httpMethod
+    
+          methodsMatch && pathsMatch && queriesMatch
+        }
+        
+        
+        val maybeSpec = methodAndPathAndQueryMatches.headOption
+        
+        
+        maybeSpec match {
+          case None => createHelpPage(httpMethod, req)
+          case Some(spec) =>
+             
+              val headers = spec.response().header().fieldNames().flatMap{name=>
+                  spec.response().header().fieldsNamed(name).map{value=>
+                    new GenericHeaderField(name, value)
+                  }
+              }
+              val representation = spec.response().representation() match {
+                case null => null
+                case specRepresentation => {
+                  val contentType = spec.response().header().fieldNames().find(_=="Content-Type").getOrElse("")
+                  Bytes(contentType, specRepresentation.data())
+              }
+              
+              }
+             
+              new Response(ResponseCode.forCode(spec.response().statusCode()), representation, headers:_*)
+        }
+      }
+      
+      class RequestGlue(pathMapping:String) extends HttpObject(pathMapping) {
             override def get(req:Request) = respond("GET", req)
-            override def post(req:Request) = respond("GET", req)
-            override def put(req:Request) = respond("GET", req)
-            override def delete(req:Request) = respond("GET", req)
+            override def post(req:Request) = respond("POST", req)
+            override def put(req:Request) = respond("PUT", req)
+            override def delete(req:Request) = respond("DELETE", req)
 	  }
 	  
       HttpObjectsJettyHandler.launchServer(9933, 
           new RequestGlue("/"),
+          new HttpObject("/_specs/{specPath*}"){
+              override def get(req:Request) = {
+                val relativePath = req.path().valueFor("specPath")
+                val localPath = new Path(rootPath, relativePath)
+                if(localPath.exists()){
+                  OK(Bytes("application/json", new FileInputStream(localPath)))
+                }else{
+                  NOT_FOUND
+                }
+              }
+          },
           new RequestGlue("/{resource*}")
       )
     }

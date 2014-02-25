@@ -13,7 +13,6 @@
 
     <name>${project.artifactId}</name>
 
-
     <properties>
         <httpobjects-version>0.3.0</httpobjects-version>
         <jackson-version>2.3.0</jackson-version>
