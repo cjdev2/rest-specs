@@ -39,11 +39,13 @@ package com.cj.restspecs.mojo;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
 
 import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -77,29 +79,44 @@ public class FingerprintMojo extends AbstractRestSpecMojo {
 
                 for(Path next : RestSpecValidator.scan(dir).specDotJsFiles){
                     File f = new File(dir, next.toString());
-                    getLog().info("Adding to fingerprint: " + next);
+                    String md5 = md5(f);
+                    getLog().info("                 [" + md5 + "] " + next);
+                    
                     String headerLine = "\nFILE:" + next.toString() + "\n";
                     digest.update(headerLine.getBytes(encoding));
                     digest.update(FileUtils.readFileToByteArray(f));
                     
                     RestSpec spec = new RestSpec(next.toString(), loader);
                     
-                    updateDigest(spec.request().representation(), digest);
-                    updateDigest(spec.response().representation(), digest);
+                    updateDigest("request", spec.request().representation(), digest);
+                    updateDigest("response", spec.response().representation(), digest);
                 }
             }
             
-            final String expected = Hex.encodeHexString(digest.digest());
-            
-            FileUtils.write(destinationFile, expected);
+            final String fingerprint = Hex.encodeHexString(digest.digest());
+            getLog().info("API Fingerprint: [" + fingerprint + "]");
+            FileUtils.write(destinationFile, fingerprint);
         } catch (Exception e) {
             throw new MojoFailureException("Error generating fingerprint", e);
         }
     }
+
+    private String md5(File f) throws FileNotFoundException, IOException {
+        FileInputStream fis = new FileInputStream(f);
+        String md5 = DigestUtils.md5Hex(fis);
+        fis.close();
+        return md5;
+    }
     
-    private void updateDigest(Representation r, MessageDigest digest){
-        if(r!=null){
-            updateDigest(r.data(), digest);
+    private void updateDigest(String name, Representation r, MessageDigest digest){
+        try {
+            if(r!=null){
+                String md5 = DigestUtils.md5Hex(r.data());
+                getLog().info("                 [" + md5 + "] " + name);
+                updateDigest(r.data(), digest);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
