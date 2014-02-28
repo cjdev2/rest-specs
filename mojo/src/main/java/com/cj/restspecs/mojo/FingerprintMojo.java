@@ -43,6 +43,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -70,14 +75,42 @@ public class FingerprintMojo extends AbstractRestSpecMojo {
      */ 
     protected File destinationFile; 
     
+    private List<File> sortedAlphabeticallyRelativeTo(final File baseDir, List<File> files){
+        SortedSet<File> sorted = new TreeSet<File>(new Comparator<File>() {
+            public int compare(File fileA, File fileB) {
+                final String pathA = Util.relativePath(baseDir, fileA);
+                final String pathB = Util.relativePath(baseDir, fileB);
+                
+                System.out.println(pathA + " vs " + pathB);
+                return pathA.compareTo(pathB);
+            }
+        });
+        
+        sorted.addAll(files);
+        
+        return new ArrayList<File>(sorted);
+    }
+    
+    private List<Path> sortedAlphabetically(List<Path> paths){
+        SortedSet<Path> sorted = new TreeSet<Path>(new Comparator<Path>() {
+            public int compare(Path pathA, Path pathB) {
+                return pathA.toString().compareTo(pathB.toString());
+            }
+        });
+        
+        sorted.addAll(paths);
+        
+        return new ArrayList<Path>(sorted);
+    }
+    
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
             MessageDigest digest = MessageDigest.getInstance("MD5");
             
-            for(final File dir: findSourceDirectories()){
+            for(final File dir: sortedAlphabeticallyRelativeTo(basedir, findSourceDirectories())){
                 final Loader loader = new FilesystemLoader(dir);
 
-                for(Path next : RestSpecValidator.scan(dir).specDotJsFiles){
+                for(Path next : sortedAlphabetically(RestSpecValidator.scan(dir).specDotJsFiles)){
                     File f = new File(dir, next.toString());
                     String md5 = md5(f);
                     getLog().info("                 [" + md5 + "] " + next);

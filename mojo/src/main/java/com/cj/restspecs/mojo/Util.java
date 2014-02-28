@@ -43,10 +43,25 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 
 public class Util {
+
+    public static String relativePath(File parent, File child){
+        final String childPath = child.getAbsolutePath();
+        final String parentPath = parent.getAbsolutePath();
+        if(!childPath.startsWith(parentPath)){
+            throw new RuntimeException(childPath + " is not a child of " + parentPath);
+        }
+        final String path = childPath.substring(parentPath.length());
+        if(path.startsWith("/")){
+            return path.substring(1);
+        }else{
+            return path;
+        }
+    }
 
     @SuppressWarnings("unchecked")
     public static <T> T readObject(File path){

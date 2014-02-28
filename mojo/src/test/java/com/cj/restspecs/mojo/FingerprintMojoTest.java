@@ -37,7 +37,7 @@
  */
 package com.cj.restspecs.mojo;
 
-import static com.cj.restspecs.mojo.Utils.relativePath;
+import static com.cj.restspecs.mojo.Util.relativePath;
 import static org.apache.commons.io.FileUtils.copyInputStreamToFile;
 
 import java.io.File;

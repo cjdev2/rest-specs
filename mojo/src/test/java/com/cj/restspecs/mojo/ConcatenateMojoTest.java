@@ -67,7 +67,7 @@ public class ConcatenateMojoTest {
         File destinationFile = new File(mavenProject.targetDir, "MyRestSpec.js");
         
         ConcatenateMojo mojo = new ConcatenateMojo();
-        mojo.directories.add(Utils.relativePath(mavenProject.root, mavenProject.srcDir));
+        mojo.directories.add(Util.relativePath(mavenProject.root, mavenProject.srcDir));
         mojo.basedir = mavenProject.root;
         mojo.destinationFile = destinationFile;
         mojo.execute();
@@ -89,7 +89,7 @@ public class ConcatenateMojoTest {
         File destinationFile = new File(mavenProject.targetDir, "RestSpec.js");
         
         ConcatenateMojo mojo = new ConcatenateMojo();
-        mojo.directories.add(Utils.relativePath(mavenProject.root, mavenProject.srcDir));
+        mojo.directories.add(Util.relativePath(mavenProject.root, mavenProject.srcDir));
         mojo.basedir = mavenProject.root;
         mojo.destinationFile = destinationFile;
         mojo.execute();
@@ -111,7 +111,7 @@ public class ConcatenateMojoTest {
         File destinationFile = new File(mavenProject.targetDir, "RestSpec.js");
         
         ConcatenateMojo mojo = new ConcatenateMojo();
-        mojo.directories.add(Utils.relativePath(mavenProject.root, mavenProject.srcDir));
+        mojo.directories.add(Util.relativePath(mavenProject.root, mavenProject.srcDir));
         mojo.basedir = mavenProject.root;
         mojo.destinationFile = destinationFile;
 
