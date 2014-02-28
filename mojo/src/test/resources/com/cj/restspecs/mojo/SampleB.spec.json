@@ -1,0 +1,11 @@
+{
+	"name":"a special sample resource",
+    "url":"/path",
+    "request": {
+        "method": "GET"
+    },
+    "response":{
+        "representation":"hi there",
+        "statusCode": 200
+    }
+}

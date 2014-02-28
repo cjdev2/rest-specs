@@ -46,7 +46,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
@@ -68,7 +67,7 @@ public class ConcatenateMojoTest {
         File destinationFile = new File(mavenProject.targetDir, "MyRestSpec.js");
         
         ConcatenateMojo mojo = new ConcatenateMojo();
-        mojo.directories.add(relativePath(mavenProject.root, mavenProject.srcDir));
+        mojo.directories.add(Utils.relativePath(mavenProject.root, mavenProject.srcDir));
         mojo.basedir = mavenProject.root;
         mojo.destinationFile = destinationFile;
         mojo.execute();
@@ -90,7 +89,7 @@ public class ConcatenateMojoTest {
         File destinationFile = new File(mavenProject.targetDir, "RestSpec.js");
         
         ConcatenateMojo mojo = new ConcatenateMojo();
-        mojo.directories.add(relativePath(mavenProject.root, mavenProject.srcDir));
+        mojo.directories.add(Utils.relativePath(mavenProject.root, mavenProject.srcDir));
         mojo.basedir = mavenProject.root;
         mojo.destinationFile = destinationFile;
         mojo.execute();
@@ -112,7 +111,7 @@ public class ConcatenateMojoTest {
         File destinationFile = new File(mavenProject.targetDir, "RestSpec.js");
         
         ConcatenateMojo mojo = new ConcatenateMojo();
-        mojo.directories.add(relativePath(mavenProject.root, mavenProject.srcDir));
+        mojo.directories.add(Utils.relativePath(mavenProject.root, mavenProject.srcDir));
         mojo.basedir = mavenProject.root;
         mojo.destinationFile = destinationFile;
 
@@ -147,78 +146,67 @@ public class ConcatenateMojoTest {
         //check the last line
         assertEquals("The rest spec array should end with ']'", expectedFooter, actualLines[actualLines.length-1]);
     }
-    
+}
 
-    private String relativePath(File parent, File child){
-        String path = child.getAbsolutePath().replaceFirst(Pattern.quote(parent.getAbsolutePath()), "");
-        if(path.startsWith("/")){
-            return path.substring(1);
-        }else{
-            return path;
+class FilesystemScenario {
+    static List<FilesystemScenario> instances = new ArrayList<FilesystemScenario>();
+    
+    public final File root, srcDir, targetDir;
+
+    public FilesystemScenario() {
+        try{
+            File tempFile = new File(System.getProperty("java.io.tmpdir"));
+            root = File.createTempFile("fakemavenproject", ".dir", tempFile);
+            if(!root.delete() && !root.mkdirs()){
+                throw new RuntimeException("Unable to create directory");
+            }
+            srcDir = mkdirs(new File(root, "src/main/resources"));
+            File fileInRoot = new File(srcDir, "fileInRoot.spec.json");
+            File dirA = new File(srcDir, "dirA");
+            dirA.mkdir();
+            File fileInA = new File(dirA, "fileInA.spec.json");
+            File dirB = new File(srcDir, "dirB");
+            dirB.mkdir();
+            File fileInB = new File(dirB, "fileInB.spec.json");
+            File fileInBNotSpec = new File(dirB,"notaspec.json");
+
+            writeToFile(fileInRoot,"root");
+            writeToFile(fileInA,"apple");
+            writeToFile(fileInB,"banana");
+            writeToFile(fileInBNotSpec,"cat");
+
+            targetDir = mkdirs(new File(root,"target"));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        instances.add(this);
+    }
+
+    private static File mkdirs(File path){
+        if(!path.exists() && !path.mkdirs()){
+            throw new RuntimeException("Could not create directory " + path.getAbsolutePath());
+        }
+        return path;
+    }
+    
+    private void writeToFile(File file, String string) {
+        try {
+            if(!file.getParentFile().exists()){
+                file.getParentFile().mkdirs();
+            }
+            PrintWriter out = new PrintWriter(file);
+            out.println(string);
+            out.close();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
     
-
-    private static class FilesystemScenario {
-        private static List<FilesystemScenario> instances = new ArrayList<FilesystemScenario>();
-        
-        final File root, srcDir, targetDir;
-
-        public FilesystemScenario() {
-            try{
-                File tempFile = new File(System.getProperty("java.io.tmpdir"));
-                root = File.createTempFile("fakemavenproject", ".dir", tempFile);
-                if(!root.delete() && !root.mkdirs()){
-                    throw new RuntimeException("Unable to create directory");
-                }
-                srcDir = mkdirs(new File(root, "src/main/resources"));
-                File fileInRoot = new File(srcDir, "fileInRoot.spec.json");
-                File dirA = new File(srcDir, "dirA");
-                dirA.mkdir();
-                File fileInA = new File(dirA, "fileInA.spec.json");
-                File dirB = new File(srcDir, "dirB");
-                dirB.mkdir();
-                File fileInB = new File(dirB, "fileInB.spec.json");
-                File fileInBNotSpec = new File(dirB,"notaspec.json");
-
-                writeToFile(fileInRoot,"root");
-                writeToFile(fileInA,"apple");
-                writeToFile(fileInB,"banana");
-                writeToFile(fileInBNotSpec,"cat");
-
-                targetDir = mkdirs(new File(root,"target"));
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-            instances.add(this);
-        }
-
-        private static File mkdirs(File path){
-            if(!path.exists() && !path.mkdirs()){
-                throw new RuntimeException("Could not create directory " + path.getAbsolutePath());
-            }
-            return path;
-        }
-        
-        private void writeToFile(File file, String string) {
-            try {
-                if(!file.getParentFile().exists()){
-                    file.getParentFile().mkdirs();
-                }
-                PrintWriter out = new PrintWriter(file);
-                out.println(string);
-                out.close();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
-        
-        public void delete(){
-            try {
-                FileUtils.deleteDirectory(root);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+    public void delete(){
+        try {
+            FileUtils.deleteDirectory(root);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 }

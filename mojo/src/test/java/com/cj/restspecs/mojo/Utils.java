@@ -38,43 +38,17 @@
 package com.cj.restspecs.mojo;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.regex.Pattern;
 
-import org.apache.maven.plugin.AbstractMojo;
+public class Utils {
 
-public abstract class AbstractRestSpecMojo extends AbstractMojo {
-
-    /**
-     * @parameter property="directories"
-     */
-    protected final List<String> directories = new ArrayList<String>();
-
-    /**
-     * @parameter property="excludes"
-     */
-    protected final List<String> excludes = new ArrayList<String>();
-
-    /**
-     * @parameter default-value="${basedir}
-     * @readonly
-     * @required
-     */
-    protected File basedir;
-
-
-    public List<File> findSourceDirectories(){
-        List<File> result = new ArrayList<File>();
-
-        if(directories.isEmpty()){
-            directories.add("src/main/resources");
+    public static String relativePath(File parent, File child){
+        String path = child.getAbsolutePath().replaceFirst(Pattern.quote(parent.getAbsolutePath()), "");
+        if(path.startsWith("/")){
+            return path.substring(1);
+        }else{
+            return path;
         }
-
-        for(String next : directories){
-            File f = new File(basedir, next);
-            result.add(f);
-        }
-
-        return result;
     }
+
 }

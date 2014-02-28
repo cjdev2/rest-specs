@@ -1,0 +1,12 @@
+{
+	"name":"a special sample resource",
+    "url":"/path",
+    "request": {
+        "representation": "hippo",
+        "method": "PUT"
+    },
+    "response":{
+        "representation-ref":"/com/cj/restspecs/mojo/SampleA.response.txt",
+        "statusCode": 300
+    }
+}

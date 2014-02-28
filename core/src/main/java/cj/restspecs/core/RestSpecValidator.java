@@ -53,6 +53,22 @@ import cj.restspecs.core.io.ClasspathLoader;
 import cj.restspecs.core.io.Loader;
  
 public class RestSpecValidator {
+    public static class FileScanningResult {
+        public final List<Path> allFiles;
+        public final List<Path> specDotJsFiles;
+        
+        public FileScanningResult(List<Path> allFiles, List<Path> specDotJsFiles) {
+            this.allFiles = allFiles;
+            this.specDotJsFiles = specDotJsFiles;
+        }
+    }
+    
+    public static FileScanningResult scan(File resourcesDir){
+        List<Path> allFiles = flatListFiles(new Path(), resourcesDir, new ArrayList<Path>());
+        List<Path> specDotJsFiles = minusNonSpecFiles(allFiles);
+        return new FileScanningResult(allFiles, specDotJsFiles);
+    }
+    
 	private final File resourcesDir;
 	private final Loader loader;
         private final PrintStream console;
@@ -74,18 +90,17 @@ public class RestSpecValidator {
 	public void validate() {
 	    validate(Collections.<String>emptyList());
 	}
+	
 	public void validate(List<String> ignores) {
-		console.println("Scanning files under " + resourcesDir.getAbsolutePath());
-
-		List<Path> allFiles = flatListFiles(new Path(), resourcesDir, new ArrayList<Path>());
-		List<Path> specDotJsFiles = minusNonSpecFiles(allFiles);
-		console.println("Found " + specDotJsFiles.size() + " specs");
+        console.println("Scanning files under " + resourcesDir.getAbsolutePath());
+		FileScanningResult scan = scan(resourcesDir);
+        console.println("Found " + scan.specDotJsFiles.size() + " specs");
 		
-		if(specDotJsFiles.isEmpty())
+		if(scan.specDotJsFiles.isEmpty())
 			throw new RuntimeException("Something is wrong ... I was expecting to find .spec.json files under " + resourcesDir.getAbsolutePath() + " but found nothing.");
 		
 		Set<String> fileNames = new TreeSet<String>();
-		for(Path specPath : specDotJsFiles) {
+		for(Path specPath : scan.specDotJsFiles) {
 			final String baseMessage = "ERROR VALIDATING " + new File(resourcesDir, specPath.toString());
 			try {
 				RestSpec spec = new RestSpec("/" + specPath.toString(), loader);
@@ -109,10 +124,10 @@ public class RestSpecValidator {
 			}
 		}
 
-		detectOrphansAndMissingReferences(resourcesDir, allFiles, specDotJsFiles, ignores);
+		detectOrphansAndMissingReferences(resourcesDir, scan.allFiles, scan.specDotJsFiles, ignores);
 	}
 	
-	private  List<Path> minusNonSpecFiles(List<Path> allFiles) {
+	private static List<Path> minusNonSpecFiles(List<Path> allFiles) {
 		List<Path> specDotJsFiles = new ArrayList<Path>();
 		
 		for(Path next : allFiles) {
@@ -142,7 +157,7 @@ public class RestSpecValidator {
 	private void detectOrphansAndMissingReferences(File resourcesDir, List<Path> files, List<Path> specDotJsFiles, List<String> ignoreStrings) {
 		List<Path> ignores = collect(ignoreStrings, new Fn<String, Path>(){
 		    public Path run(String input) {
-			return new Path(input);
+		        return new Path(input);
 		    }
 		});
 		List<Path> referencedFiles = new ArrayList<Path>();
@@ -206,7 +221,7 @@ public class RestSpecValidator {
 		return new Path(refNode.getTextValue());
 	}
 
-	private  List<Path> flatListFiles(Path base, File path, List<Path> files) {
+	private static List<Path> flatListFiles(Path base, File path, List<Path> files) {
 		if (path.isDirectory()) {
 			for (File child : path.listFiles()) {
 				flatListFiles(base.childNamed(child.getName()), child, files);
@@ -219,48 +234,49 @@ public class RestSpecValidator {
 
 		return files;
 	}
-}
-
-class Path implements Comparable<Path> {
-	final List<String> segments;
-
-	public Path() {
-		segments = Collections.emptyList();
-	}
-
-	public Path(String path){
-		this(Arrays.asList(path.split("/")));
-	}
-
-	public Path(List<String> segments) {
-		super();
-		this.segments = segments;
-	}
 	
-	public Path parent() {
-		return segments.isEmpty() ? null : new Path(segments.subList(0, segments.size()-1));
-	}
+	public static class Path implements Comparable<Path> {
+	    final List<String> segments;
 
-	public int compareTo(Path o) {
-		return o.toString().compareTo(this.toString());
-	}
+	    public Path() {
+	        segments = Collections.emptyList();
+	    }
 
-	public Path childNamed(String childName){
-		List<String> path = new ArrayList<String>();
-		path.addAll(segments);
-		path.add(childName);
-		return new Path(path);
-	}
+	    public Path(String path){
+	        this(Arrays.asList(path.split("/")));
+	    }
 
-	@Override
-	public String toString() {
-		StringBuilder txt = new StringBuilder();
-		for (String next : segments) {
-			if (txt.length() > 0)
-				txt.append("/");
-			txt.append(next);
-		}
-		
-		return txt.toString();
+	    public Path(List<String> segments) {
+	        super();
+	        this.segments = segments;
+	    }
+	    
+	    public Path parent() {
+	        return segments.isEmpty() ? null : new Path(segments.subList(0, segments.size()-1));
+	    }
+
+	    public int compareTo(Path o) {
+	        return o.toString().compareTo(this.toString());
+	    }
+
+	    public Path childNamed(String childName){
+	        List<String> path = new ArrayList<String>();
+	        path.addAll(segments);
+	        path.add(childName);
+	        return new Path(path);
+	    }
+
+	    @Override
+	    public String toString() {
+	        StringBuilder txt = new StringBuilder();
+	        for (String next : segments) {
+	            if (txt.length() > 0)
+	                txt.append("/");
+	            txt.append(next);
+	        }
+	        
+	        return txt.toString();
+	    }
 	}
 }
+

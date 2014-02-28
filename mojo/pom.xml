@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>com.cj.restspecs</groupId>
 		<artifactId>rest-specs-pom</artifactId>
-		<version>7.2.0-SNAPSHOT</version>
+		<version>7.3.0-SNAPSHOT</version>
 	</parent>
 
 	<groupId>com.cj.restspecs.mojo</groupId>
@@ -31,6 +31,11 @@
 		    <artifactId>rest-specs-core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.7</version>
+        </dependency>
 	</dependencies>
 
 </project>
