@@ -53,6 +53,7 @@ import org.httpobjects.header.GenericHeaderField
 import org.httpobjects.Representation
 import java.io.FileInputStream
 import scala.collection.mutable.ListBuffer
+import java.net.URL
 
 object RestSpecServer {
     
@@ -76,6 +77,8 @@ object RestSpecServer {
       val bStr = b.getAbsolutePath()
       if(aStr.startsWith(bStr)) aStr.substring(bStr.length()) else aStr
     }
+    
+   private def stripVars(t:String) = t.replaceAll("\\{[a-z|A-Z]*\\}", "VARIABLE")
     
 	def main(args: Array[String]) {
       val currentDirectory = new Path(System.getProperty("user.dir"))
@@ -104,8 +107,14 @@ object RestSpecServer {
 	    val lines = specs.map{spec=>
                           
               val relativePathToSpec = specFilePathsAndSpecs.find(_.spec eq spec )
+              val specPath = stripVars(spec.path.toString)
+              val sampleLink = if(spec.request.method=="GET"){ 
+                  " <a href=\"" + specPath + "\">" + spec.path + "</a>"
+              } else {
+                  spec.path 
+              }
               
-              s"""<a href="_specs/${relativePathToSpec.get.filesystemLocation}">${spec.name}</a> """ + spec.request.method + " <a href=\"" + spec.path + "\">" + spec.path + "</a>"
+              s"""<a href="/_specs${relativePathToSpec.get.filesystemLocation}">${spec.name}</a> """ + spec.request.method + sampleLink
             }
             
             val htmlContent = s"""
@@ -124,14 +133,18 @@ object RestSpecServer {
         
         
         val methodAndPathAndQueryMatches = specs.filter{candidate=>
-          val p = new URI(candidate.path()).getPath()
+          
+          
+          val p = new URL("http://" + stripVars(candidate.path())).getPath()
           val pathsMatch = path == p
-          val queriesMatch = query == candidate.queryString
+          val queriesMatch = stripVars(query) == stripVars(candidate.queryString)
           val methodsMatch = candidate.request.method == httpMethod
     
           methodsMatch && pathsMatch && queriesMatch
         }
         
+        val numMatches = methodAndPathAndQueryMatches.length
+        if(methodAndPathAndQueryMatches.length>1) println(s"WARNING: There are $numMatches matches for $path")
         
         val maybeSpec = methodAndPathAndQueryMatches.headOption
         
