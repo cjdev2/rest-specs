@@ -1,7 +1,7 @@
 /*jslint newcap: false*/
 /*global $, module, equal, raises, test, RuntimeException, RestSpecUtil, MockHttpClient, XMLSerializer */
 
-define(["RestSpecUtil"], function(){
+define(["RestSpecUtil"], function () {
     module("RestSpecUtilTest");
 
     test("With Ampersand getSpec not wrapped throws exception", function () {
@@ -12,7 +12,7 @@ define(["RestSpecUtil"], function(){
             "name": "find it",
             "url": "/wacky url time with spaces",
             "response": {
-                "header":{"Content-Type":"application/xml"},
+                "header": {"Content-Type": "application/xml"},
                 "representation": "<results><ad><name>Hello & Fozzy></name></ad></results>"
             }
         });
@@ -21,7 +21,7 @@ define(["RestSpecUtil"], function(){
         } catch (except) {
             error = except;
         }
-        
+
         equal(error, "Your response representation may not be well-formed.  Possible cause: an XML marker tag like < or & not wrapped in a CDATA");
     });
 
@@ -33,7 +33,7 @@ define(["RestSpecUtil"], function(){
             "name": "super duper",
             "url": "/superduper.json",
             "response": {
-                "header":{"Content-Type":"application/json"},
+                "header": {"Content-Type": "application/json"},
                 "representation": "{\"super\":\"duper\",\"supper\":1}"
             }
         });
@@ -55,7 +55,7 @@ define(["RestSpecUtil"], function(){
             "name": "super duper",
             "url": "/superduper.json",
             "response": {
-                "header":{"Content-Type":"text/plain"},
+                "header": {"Content-Type": "text/plain"},
                 "representation": "whatever, it doesn't matter"
             }
         });
@@ -75,14 +75,14 @@ define(["RestSpecUtil"], function(){
             "name": "find it",
             "url": "/wacky url time with spaces",
             "response": {
-                "header":{"Content-Type":"application/xml"},
+                "header": {"Content-Type": "application/xml"},
                 "representation": "<results><ad><name>Hello &amp; Fozzy <![CDATA[& Kermit]]></name><id>1</id><description><![CDATA[http://fun.html]]></description></ad></results>"
             }
         });
         spec = RestSpecUtil(MockRestSpec).getSpec("find it");
 
         equal(typeof spec.response.representation.asXml, "object");
-        equal($(spec.response.representation.asXml).text(),  "Hello & Fozzy & Kermit1http://fun.html");
+        equal($(spec.response.representation.asXml).text(), "Hello & Fozzy & Kermit1http://fun.html");
         equal(new XMLSerializer().serializeToString(spec.response.representation.asXml), "<results><ad><name>Hello &amp; Fozzy <![CDATA[& Kermit]]></name><id>1</id><description><![CDATA[http://fun.html]]></description></ad></results>");
     });
 
@@ -170,7 +170,7 @@ define(["RestSpecUtil"], function(){
             "name": "find it",
             "url": "/wacky url time with spaces",
             "response": {
-                "header":{"Content-Type":"application/xml"},
+                "header": {"Content-Type": "application/xml"},
                 "representation": "<text>where am I?</text>"
             }
         });
@@ -185,7 +185,7 @@ define(["RestSpecUtil"], function(){
         equal(new XMLSerializer().serializeToString(spec.response.representation.asXml), "<text>where am I?</text>");
         equal(spec.response.representation.asJson, "<text>where am I?</text>");
         equal(spec.response.representation.asText, "<text>where am I?</text>");
-        
+
         spec = RestSpecUtil(MockRestSpec).getSpec("find it");
         equal(new XMLSerializer().serializeToString(spec.response.representation.asXml), "<text>where am I?</text>");
     });
@@ -202,26 +202,26 @@ define(["RestSpecUtil"], function(){
             "name": "find it",
             "url": "/wacky url time with spaces",
             "request": {
-                "header":{"Content-Type":"application/json"},
+                "header": {"Content-Type": "application/json"},
                 "representation-ref": "/line/package/stuff/requestContent.json"
             },
             "response": {
-                "header":{"Content-Type":"application/xml"},
+                "header": {"Content-Type": "application/xml"},
                 "representation-ref": "/line/package/stuff/responseContent.xml"
             }
         });
 
         mockClient = {
-            ajax: function(opts) {
-                if(opts.url === "/line/package/stuff/requestContent.json") {
+            ajax: function (opts) {
+                if (opts.url === "/line/package/stuff/requestContent.json") {
                     opts.success("whatever", "text status", {responseText: expectedRequestRepresentation});
-                } else if (opts.url === "/line/package/stuff/responseContent.xml"){
+                } else if (opts.url === "/line/package/stuff/responseContent.xml") {
                     opts.success("whatever", "text status", {responseText: expectedResponseRepresentation});
                 }
             }
         };
 
-        util = RestSpecUtil(mockRestSpecs, {client:mockClient});
+        util = RestSpecUtil(mockRestSpecs, {client: mockClient});
         spec = util.getSpec("find it");
 
         ok(spec.request.representation, 'request.representation exists');
@@ -231,36 +231,36 @@ define(["RestSpecUtil"], function(){
         equal(spec.response.representation.asText, expectedResponseRepresentation, 'response representation gives ref content');
     });
 
-    test("RestSpecUtil resolves file-refs relative to the pathPrefix option if present", function(){
+    test("RestSpecUtil resolves file-refs relative to the pathPrefix option if present", function () {
         // GIVEN: a spec with a file ref
         var MockRestSpec = [], mockClient, retrieved, spec, util;
         MockRestSpec.push({
             "name": "find it",
             "url": "/wacky url time with spaces",
             "response": {
-                "header":{"Content-Type":"application/xml"},
+                "header": {"Content-Type": "application/xml"},
                 "representation-ref": "/line/package/stuff/somefile.xml"
             }
         });
-        
-        mockClient = {
-                ajax: function(opts) {
-                    if(opts.url === "/line/package/stuff/somefile.xml") {
-                        opts.success("whatever", "text status", {responseText: "<message>want some frogs instead?</message>"});
-                    } else if(opts.url === "/fuzzybunnies/line/package/stuff/somefile.xml"){
-                        opts.success("whatever", "text status", {responseText: "<message>these are the bunnies you were looking for</message>"});
-                    }
-                }
-            };
 
-        util = RestSpecUtil(MockRestSpec, {client:mockClient, pathPrefix:"/fuzzybunnies"});
+        mockClient = {
+            ajax: function (opts) {
+                if (opts.url === "/line/package/stuff/somefile.xml") {
+                    opts.success("whatever", "text status", {responseText: "<message>want some frogs instead?</message>"});
+                } else if (opts.url === "/fuzzybunnies/line/package/stuff/somefile.xml") {
+                    opts.success("whatever", "text status", {responseText: "<message>these are the bunnies you were looking for</message>"});
+                }
+            }
+        };
+
+        util = RestSpecUtil(MockRestSpec, {client: mockClient, pathPrefix: "/fuzzybunnies"});
         // WHEN: RestSpecUtil is asked to resolve that file ref relative to a pathPrefix
         spec = util.getSpec("find it");
 
-        
+
         // THEN: it should find the file relative to the prefix
         retrieved = util.getRepresentationRefText(spec.response["representation-ref"]);
         equal(retrieved, "<message>these are the bunnies you were looking for</message>");
-        
+
     });
 });

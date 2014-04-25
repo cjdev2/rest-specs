@@ -1,12 +1,12 @@
 {
-	"name":"the resource for fun",
-    "url":"/path",
+    "name": "the resource for fun",
+    "url": "/path",
     "request": {
         "representation": "hippo",
         "method": "PUT"
     },
-    "response":{
-        "representation-ref":"/cj/restspecifications/test/otherFile.who",
+    "response": {
+        "representation-ref": "/cj/restspecifications/test/otherFile.who",
         "statusCode": 300
     }
 }
