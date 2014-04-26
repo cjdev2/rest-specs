@@ -37,7 +37,11 @@
  */
 package cj.restspecifications.core;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
@@ -307,11 +311,7 @@ public class RestSpecTest {
                             "    }\n" +
                             "}\n").replaceAll("representationLine", Matcher.quoteReplacement(representationLine));
 
-            Loader dummyLoader = new Loader() {
-                public InputStream load(String name) {
-                    return new ByteArrayInputStream(specJson.getBytes());
-                }
-            };
+            Loader dummyLoader = new StringLoader(specJson);
 
             // WHEN: you read it with a 'RestSpec' instance
             RestSpec spec = new RestSpec("dummyName", dummyLoader);
@@ -321,5 +321,26 @@ public class RestSpecTest {
         }
     }
 
+    @Test
+    public void giveUsersACleanCodeWayOfBuildingPathReplacements() {
+        String specJson = "{ \"url\": \"/path/{replacement1}\" }";
 
+        RestSpec restSpecWithoutReplacements = new RestSpec("coolHandSpec", new StringLoader(specJson));
+        RestSpec restSpecWithPathReplacement = restSpecWithoutReplacements.withParameter("{replacement1}", "luke");
+
+        assertThat("RestSpec should be immutable", restSpecWithoutReplacements, not(sameInstance(restSpecWithPathReplacement)));
+        assertThat(restSpecWithPathReplacement.replacedPath(), equalTo("/path/luke"));
+    }
+
+    private static class StringLoader implements Loader {
+        private final String specJson;
+
+        public StringLoader(String specJson) {
+            this.specJson = specJson;
+        }
+
+        public InputStream load(String name) {
+            return new ByteArrayInputStream(specJson.getBytes());
+        }
+    }
 }

@@ -40,12 +40,7 @@ package cj.restspecs.core;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.JsonNode;
@@ -62,6 +57,14 @@ public class RestSpec {
     private JsonNode root;
     private final String name, url;
     private final Loader loader;
+    private final Map<String, Object> replacements;
+
+    private RestSpec(String url, Map<String, Object> replacements) {
+        this.name = null;
+        this.url = url;
+        this.loader = null;
+        this.replacements = replacements;
+    }
 
     public RestSpec(String specName) {
         this(specName, new ClasspathLoader());
@@ -69,6 +72,8 @@ public class RestSpec {
 
     public RestSpec(String specName, Loader loader) {
         this.loader = loader;
+        this.replacements = new HashMap<String, Object>();
+
         InputStream is = loader.load(specName);
         if (is == null) throw new RuntimeException("Could not find file named " + specName);
 
@@ -220,6 +225,18 @@ public class RestSpec {
                 return theHeader;
             }
         };
+    }
+
+    public RestSpec withParameter(String parameterName, Object parameterValue) {
+        HashMap<String, Object> replacements;
+        replacements = new HashMap<String, Object>();
+        replacements.put(parameterName, parameterValue);
+
+        return new RestSpec(url, replacements);
+    }
+
+    public String replacedPath() {
+        return getPathReplacedWith(replacements);
     }
 }
 
