@@ -38,6 +38,8 @@
 package com.cj.restspecs.mockrunner;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -51,6 +53,7 @@ import cj.restspecs.core.RestSpec;
 
 import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.codehaus.jackson.map.ObjectMapper;
 
 public class RestSpecServletValidator {
 
@@ -93,7 +96,7 @@ public class RestSpecServletValidator {
 
         //given
         MockHttpServletRequest req = buildRequestFromRestSpec(rs);
-        MockHttpServletResponse res = new MockHttpServletResponse();
+        MockHttpServletResponse res = new MockHttpServletResponseWithNiceExceptionsForUnsupportedFunctionality();
 
         //when
         testSubject.service(req, res);
@@ -158,14 +161,51 @@ public class RestSpecServletValidator {
     private List<Violation> validateResponseBody(RestSpec restSpec, MockHttpServletResponse response) {
         List<Violation> violations;
 
-        final String expectedRepresentation = restSpec.response().representation().asText();
-        final String actualRepresentation = response.getOutputStreamContent();
-        if (!expectedRepresentation.equals(actualRepresentation)) {
+        String expectedRepresentation;
+        String actualRepresentation;
+
+        if (isJsonContent(restSpec)) {
+            expectedRepresentation = normalize(restSpec.response().representation().asText());
+            actualRepresentation = normalize(response.getOutputStreamContent());
+        } else {
+            expectedRepresentation = restSpec.response().representation().asText();
+            actualRepresentation = response.getOutputStreamContent();
+        }
+
+        boolean representationsAreEquivalent = expectedRepresentation.equals(actualRepresentation);
+        if (!representationsAreEquivalent) {
             violations = Collections.singletonList(new Violation("The response representation should have been " + expectedRepresentation + " but was " + actualRepresentation));
         } else {
             violations = Collections.emptyList();
         }
 
         return violations;
+    }
+
+    private boolean isJsonContent(RestSpec restSpec) {
+        String contentType = restSpec.response().representation().contentType();
+        boolean isJsonContent = contentType.contains("/json");
+        return isJsonContent;
+    }
+
+    private String normalize(String inputJson) {
+        try {
+            String outputJson;
+
+            ObjectMapper mapper = new ObjectMapper();
+            Map mappedInput = mapper.readValue(inputJson, Map.class);
+
+            outputJson = mapper.writeValueAsString(mappedInput);
+            return outputJson;
+        } catch (Exception error) {
+            throw new RuntimeException(error);
+        }
+    }
+}
+
+class MockHttpServletResponseWithNiceExceptionsForUnsupportedFunctionality extends MockHttpServletResponse {
+    @Override
+    public PrintWriter getWriter() throws IOException {
+        throw new UnsupportedOperationException("getWriter not implemented by MockRunner--sorry!");
     }
 }
