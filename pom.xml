@@ -36,6 +36,7 @@
 	                    <exclude>**/*.css</exclude>
 	                    <exclude>**/*.who</exclude>
 	                    <exclude>**/*.html</exclude>
+                        <exclude>.idea/**</exclude>
 	                </excludes>
 				</configuration>
 				<executions>
