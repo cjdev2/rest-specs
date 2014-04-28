@@ -75,6 +75,16 @@ public class RestSpecServletValidatorTest {
     }
 
     @Test
+    public void validateNormalizesJSONArrayResponseBodies() throws Exception {
+        String simpleJsonArraySpecJson = "{ \"url\": \"/echo\", \"request\": { \"method\": \"GET\" }, \"response\": { \"statusCode\": 200, \"header\": { \"Content-Type\": \"application/json\" }, \"representation\": \"[ { \\\"age\\\": 18 }, { \\\"age\\\": 19 } ]\" } }";
+
+        RestSpec restSpec = new RestSpec("simpleJsonArraySpec", new StringLoader(simpleJsonArraySpecJson));
+        HttpServlet testSubject = new FakeHttpServlet("application/json", "[ {\n   \"age\": 18\n},\n{\n   \"age\": 19\n} ]");
+
+        new RestSpecServletValidator().validate(restSpec, testSubject).assertNoViolations();
+    }
+
+    @Test
     public void invalidJsonResponseBodyWillThrowAnExceptionCausingTheTestToError() {
         String simpleJsonSpecJson = "{ \"url\": \"/echo\", \"request\": { \"method\": \"GET\" }, \"response\": { \"statusCode\": 200, \"header\": { \"Content-Type\": \"application/json\" }, \"representation\": \"{}\" } }";
 

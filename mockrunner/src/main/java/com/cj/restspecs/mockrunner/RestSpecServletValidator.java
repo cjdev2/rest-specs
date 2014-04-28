@@ -193,7 +193,7 @@ public class RestSpecServletValidator {
             String outputJson;
 
             ObjectMapper mapper = new ObjectMapper();
-            Map mappedInput = mapper.readValue(inputJson, Map.class);
+            Object mappedInput = mapper.readValue(inputJson, Object.class);
 
             outputJson = mapper.writeValueAsString(mappedInput);
             return outputJson;
