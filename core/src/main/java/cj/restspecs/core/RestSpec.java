@@ -127,14 +127,19 @@ public class RestSpec {
 
     private String[] parseUrl() {
         int delimiterPos = url.indexOf('?');
-        if (delimiterPos == -1) {
-            return new String[]{url, ""};
-        } else {
-            return new String[]{
-                    url.substring(0, delimiterPos),
-                    url.substring(delimiterPos)
-            };
+
+        String path = url;
+        String queryString = "";
+
+        if (delimiterPos > -1) {
+            path = url.substring(0, delimiterPos);
+            queryString = url.substring(delimiterPos);
         }
+
+        return new String[] {
+            path,
+            queryString
+        };
     }
 
     public Map<String, String> queryParams() {
