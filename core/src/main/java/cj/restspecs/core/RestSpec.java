@@ -79,7 +79,9 @@ public class RestSpec {
         this.replacements = new HashMap<String, Object>();
 
         InputStream is = loader.load(specName);
-        if (is == null) throw new RuntimeException("Could not find file named " + specName);
+        if (is == null) {
+            throw new RuntimeException("Could not find file named " + specName);
+        }
 
         try {
             ObjectMapper mapper = new ObjectMapper();
@@ -145,8 +147,9 @@ public class RestSpec {
                     String[] pair = param.split("=");
                     String key = URLDecoder.decode(pair[0], "UTF-8");
                     String value = null;
-                    if (pair.length > 1)
+                    if (pair.length > 1) {
                         value = URLDecoder.decode(pair[1], "UTF-8");
+                    }
                     queryParams.put(key, value);
                 }
             }
@@ -281,9 +284,7 @@ class RepresentationFactory {
                 } catch (IOException ioe) {  /*can't do that*/ }
                 return null;
             }
-
         };
-
     }
 }
 
