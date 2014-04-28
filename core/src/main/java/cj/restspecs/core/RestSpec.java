@@ -196,39 +196,11 @@ public class RestSpec {
 
     public Response response() {
         final JsonNode responseNode = root.path("response");
-        if (responseNode.isMissingNode())
+        if (responseNode.isMissingNode()) {
             throw new RuntimeException("Spec is missing a 'response'");
+        }
 
-        final Header theHeader = new HeaderImpl(responseNode.path("header"));
-
-        return new Response() {
-
-            public int statusCode() {
-                return responseNode.path("statusCode").getIntValue();
-            }
-
-            private <T> T nthOrElse(int n, T defaultValue, List<T> list) {
-                if (list.size() > 0) {
-                    return list.get(n);
-                } else {
-                    return defaultValue;
-                }
-            }
-
-            public Representation representation() {
-                if (responseNode.path("representation").isMissingNode() && responseNode.path("representation-ref").isMissingNode())
-                    return null;
-
-
-                String contentType = nthOrElse(0, "", theHeader.fieldsNamed("Content-Type"));
-
-                return RepresentationFactory.createRepresentation(responseNode, loader, contentType);
-            }
-
-            public Header header() {
-                return theHeader;
-            }
-        };
+        return new ResponseFromRestSpec(responseNode, loader);
     }
 
     public RestSpec withParameter(String parameterName, Object parameterValue) {
@@ -312,5 +284,43 @@ class RepresentationFactory {
 
         };
 
+    }
+}
+
+class ResponseFromRestSpec implements Response {
+    private final Loader loader;
+    private final JsonNode responseNode;
+    private final Header theHeader;
+
+    public ResponseFromRestSpec(JsonNode responseNode, Loader loader) {
+        this.loader = loader;
+        this.responseNode = responseNode;
+        this.theHeader = new HeaderImpl(responseNode.path("header"));
+    }
+
+    public int statusCode() {
+        return responseNode.path("statusCode").getIntValue();
+    }
+
+    private <T> T nthOrElse(int n, T defaultValue, List<T> list) {
+        if (list.size() > 0) {
+            return list.get(n);
+        } else {
+            return defaultValue;
+        }
+    }
+
+    public Representation representation() {
+        if (responseNode.path("representation").isMissingNode() && responseNode.path("representation-ref").isMissingNode()) {
+            return null;
+        }
+
+        String contentType = nthOrElse(0, "", theHeader.fieldsNamed("Content-Type"));
+
+        return RepresentationFactory.createRepresentation(responseNode, loader, contentType);
+    }
+
+    public Header header() {
+        return theHeader;
     }
 }
