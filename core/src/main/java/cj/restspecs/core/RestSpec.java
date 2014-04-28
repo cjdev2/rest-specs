@@ -177,25 +177,8 @@ public class RestSpec {
     }
 
     public Request request() {
-        return new Request() {
-
-            final JsonNode requestNode = root.path("request");
-            final Header theHeader = new HeaderImpl(requestNode.path("header"));
-
-            public String method() {
-                return root.path("request").path("method").getValueAsText();
-            }
-
-            public Representation representation() {
-                return RepresentationFactory.createRepresentation(requestNode, loader, "");
-            }
-
-            public Header header() {
-                return theHeader;
-            }
-        };
+        return new RequestFromRestSpec(root, loader);
     }
-
 
     public Response response() {
         final JsonNode responseNode = root.path("response");
@@ -285,6 +268,30 @@ class RepresentationFactory {
                 return null;
             }
         };
+    }
+}
+
+class RequestFromRestSpec implements Request {
+    private final JsonNode requestNode;
+    private final Loader loader;
+    private final Header theHeader;
+
+    RequestFromRestSpec(JsonNode root, Loader loader) {
+        this.requestNode = root.path("request");
+        this.loader = loader;
+        this.theHeader = new HeaderImpl(requestNode.path("header"));
+    }
+
+    public String method() {
+        return requestNode.path("method").getValueAsText();
+    }
+
+    public Representation representation() {
+        return RepresentationFactory.createRepresentation(requestNode, loader, "");
+    }
+
+    public Header header() {
+        return theHeader;
     }
 }
 
