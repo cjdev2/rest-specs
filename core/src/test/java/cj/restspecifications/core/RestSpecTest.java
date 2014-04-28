@@ -51,6 +51,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 
+import cj.restspecs.core.io.StringLoader;
 import org.junit.Test;
 
 import cj.restspecs.core.RestSpec;
@@ -346,17 +347,5 @@ public class RestSpecTest {
 
         assertThat(restSpecWithLeftReplacement.replacedPath(), equalTo("/path?leftParameter=lefty&rightParameter={right}"));
         assertThat(restSpecWithRightReplacement.replacedPath(), equalTo("/path?leftParameter=lefty&rightParameter=righty"));
-    }
-
-    private static class StringLoader implements Loader {
-        private final String specJson;
-
-        public StringLoader(String specJson) {
-            this.specJson = specJson;
-        }
-
-        public InputStream load(String name) {
-            return new ByteArrayInputStream(specJson.getBytes());
-        }
     }
 }
