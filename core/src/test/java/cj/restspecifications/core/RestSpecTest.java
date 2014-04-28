@@ -332,6 +332,22 @@ public class RestSpecTest {
         assertThat(restSpecWithPathReplacement.replacedPath(), equalTo("/path/luke"));
     }
 
+    @Test
+    public void pathReplacementWorksWithQueryParametersAsWell() {
+        String specJson = "{ \"url\": \"/path?leftParameter={left}&rightParameter={right}\" }";
+
+        RestSpec restSpecWithoutReplacements = new RestSpec("testSpec", new StringLoader(specJson));
+        RestSpec restSpecWithLeftReplacement = restSpecWithoutReplacements.withParameter("{left}", "lefty");
+        RestSpec restSpecWithRightReplacement = restSpecWithLeftReplacement.withParameter("{right}", "righty");
+
+        assertThat("RestSpec should be immutable", restSpecWithoutReplacements, not(sameInstance(restSpecWithLeftReplacement)));
+        assertThat("RestSpec should be immutable", restSpecWithoutReplacements, not(sameInstance(restSpecWithRightReplacement)));
+        assertThat("RestSpec should be immutable", restSpecWithLeftReplacement, not(sameInstance(restSpecWithRightReplacement)));
+
+        assertThat(restSpecWithLeftReplacement.replacedPath(), equalTo("/path?leftParameter=lefty&rightParameter={right}"));
+        assertThat(restSpecWithRightReplacement.replacedPath(), equalTo("/path?leftParameter=lefty&rightParameter=righty"));
+    }
+
     private static class StringLoader implements Loader {
         private final String specJson;
 

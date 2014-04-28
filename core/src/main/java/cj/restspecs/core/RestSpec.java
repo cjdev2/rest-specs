@@ -59,11 +59,15 @@ public class RestSpec {
     private final Loader loader;
     private final Map<String, Object> replacements;
 
-    private RestSpec(String url, Map<String, Object> replacements) {
-        this.name = null;
-        this.url = url;
-        this.loader = null;
-        this.replacements = replacements;
+    private RestSpec(RestSpec originalSpec, Map<String, Object> replacements) {
+        this.root = originalSpec.root;
+        this.name = originalSpec.name;
+        this.url = originalSpec.url;
+        this.loader = originalSpec.loader;
+
+        this.replacements = new HashMap<String, Object>();
+        this.replacements.putAll(originalSpec.replacements);
+        this.replacements.putAll(replacements);
     }
 
     public RestSpec(String specName) {
@@ -232,7 +236,7 @@ public class RestSpec {
         replacements = new HashMap<String, Object>();
         replacements.put(parameterName, parameterValue);
 
-        return new RestSpec(url, replacements);
+        return new RestSpec(this, replacements);
     }
 
     public String replacedPath() {
