@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.cj.restspecs</groupId>
         <artifactId>rest-specs-pom</artifactId>
-        <version>7.3.3-SNAPSHOT</version>
+        <version>7.3.4-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
