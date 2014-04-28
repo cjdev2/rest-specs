@@ -96,22 +96,31 @@ public class RestSpecValidator {
         FileScanningResult scan = scan(resourcesDir);
         console.println("Found " + scan.specDotJsFiles.size() + " specs");
 
-        if (scan.specDotJsFiles.isEmpty())
+        if (scan.specDotJsFiles.isEmpty()) {
             throw new RuntimeException("Something is wrong ... I was expecting to find .spec.json files under " + resourcesDir.getAbsolutePath() + " but found nothing.");
+        }
 
         Set<String> fileNames = new TreeSet<String>();
         for (Path specPath : scan.specDotJsFiles) {
             final String baseMessage = "ERROR VALIDATING " + new File(resourcesDir, specPath.toString());
             try {
                 RestSpec spec = new RestSpec("/" + specPath.toString(), loader);
-                if (spec.name() == null)
+
+                if (spec.name() == null) {
                     throw new RuntimeException(baseMessage + ": it is missing a \"name\"");
-                if (spec.path() == null)
+                }
+
+                if (spec.path() == null) {
                     throw new RuntimeException(baseMessage + ": it is missing a \"url\"");
-                if (spec.response() == null)
+                }
+
+                if (spec.response() == null) {
                     throw new RuntimeException(baseMessage + ": it is missing a \"response\"");
-                if (spec.response().representation() != null && spec.response().header().fieldsNamed("Content-Type").isEmpty())
+                }
+
+                if (spec.response().representation() != null && spec.response().header().fieldsNamed("Content-Type").isEmpty()) {
                     throw new RuntimeException(baseMessage + ": it is missing a \"Content-Type\" header");
+                }
 
                 if (fileNames.contains(spec.name())) {
                     throw new RuntimeException("There is more than one spec named \"" + spec.name() + "\"");
@@ -185,7 +194,9 @@ public class RestSpecValidator {
 
         TreeSet<Path> filesToVet = new TreeSet<Path>(files);
         filesToVet.removeAll(specDotJsFiles);
-        for (Path a : referencedFiles) filesToVet.remove(a);
+        for (Path a : referencedFiles) {
+            filesToVet.remove(a);
+        }
 
         TreeSet<Path> filesActuallyIgnored = new TreeSet<Path>();
         for (Path next : ignores) {
@@ -215,8 +226,9 @@ public class RestSpecValidator {
     private Path validateRepresentationReference(Path next, JsonNode refNode) {
         File file = new File(resourcesDir.getAbsolutePath() + File.separatorChar + refNode.getTextValue());
 
-        if (!file.exists())
+        if (!file.exists()) {
             throw new RuntimeException("Spec references nonexistent file: " + file.getAbsolutePath());
+        }
 
         return new Path(refNode.getTextValue());
     }
@@ -270,8 +282,9 @@ public class RestSpecValidator {
         public String toString() {
             StringBuilder txt = new StringBuilder();
             for (String next : segments) {
-                if (txt.length() > 0)
+                if (txt.length() > 0) {
                     txt.append("/");
+                }
                 txt.append(next);
             }
 
