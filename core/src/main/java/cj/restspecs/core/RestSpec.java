@@ -284,6 +284,10 @@ class RequestFromRestSpec implements Request {
 
     RequestFromRestSpec(JsonNode root, Loader loader) {
         this.requestNode = root.path("request");
+        if (this.requestNode.isMissingNode()) {
+            throw new RuntimeException("Spec is missing a 'request'");
+        }
+
         this.loader = loader;
         this.theHeader = new HeaderImpl(requestNode.path("header"));
     }

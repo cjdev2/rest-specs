@@ -49,6 +49,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
@@ -97,6 +98,19 @@ public class RestSpecServletValidatorTest {
         } catch (Exception error) {
             assertThat(error, instanceOf(RuntimeException.class));
             assertThat(error.getCause(), instanceOf(JsonParseException.class));
+        }
+    }
+
+    @Test
+    public void validateWillThrowExceptionIfThereIsNoRequestInRestSpec() throws Exception {
+        String boogieSpecJson = "{ \"url\": \"/boogie\" }";
+        RestSpec spec = new RestSpec("boogieSpecJson", new StringLoader(boogieSpecJson));
+        HttpServlet testSubject = new FakeHttpServlet("text/plain", "oogie oogie oogie!");
+
+        try {
+            new RestSpecServletValidator().validate(spec, testSubject);
+        } catch (RuntimeException cause) {
+            assertThat(cause.getMessage(), equalTo("Spec is missing a 'request'"));
         }
     }
 }
