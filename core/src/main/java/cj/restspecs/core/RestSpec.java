@@ -293,7 +293,11 @@ class RequestFromRestSpec implements Request {
     }
 
     public String method() {
-        return requestNode.path("method").getValueAsText();
+        JsonNode method = requestNode.path("method");
+        if (method.isMissingNode()) {
+            throw new RuntimeException("Spec is missing a 'request.method'");
+        }
+        return method.getValueAsText();
     }
 
     public Representation representation() {

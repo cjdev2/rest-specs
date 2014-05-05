@@ -113,6 +113,19 @@ public class RestSpecServletValidatorTest {
             assertThat(cause.getMessage(), equalTo("Spec is missing a 'request'"));
         }
     }
+
+    @Test
+    public void validateWillThrowExceptionIfThereIsNoRequestMethodInRestSpec() throws Exception {
+        String scoobySpecJson = "{ \"url\": \"/scooby\", \"request\": { } }";
+        RestSpec spec = new RestSpec("scoobySpecJson", new StringLoader(scoobySpecJson));
+        HttpServlet testSubject = new FakeHttpServlet("text/plain", "woof!");
+
+        try {
+            new RestSpecServletValidator().validate(spec, testSubject);
+        } catch (RuntimeException cause) {
+            assertThat(cause.getMessage(), equalTo("Spec is missing a 'request.method'"));
+        }
+    }
 }
 
 class FakeHttpServlet extends HttpServlet {
