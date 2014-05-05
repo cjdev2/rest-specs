@@ -109,6 +109,7 @@ public class RestSpecServletValidatorTest {
 
         try {
             new RestSpecServletValidator().validate(spec, testSubject);
+            fail("Did not validate request presence");
         } catch (RuntimeException cause) {
             assertThat(cause.getMessage(), equalTo("Spec is missing a 'request'"));
         }
@@ -122,6 +123,7 @@ public class RestSpecServletValidatorTest {
 
         try {
             new RestSpecServletValidator().validate(spec, testSubject);
+            fail("Did not validate request method presence");
         } catch (RuntimeException cause) {
             assertThat(cause.getMessage(), equalTo("Spec is missing a 'request.method'"));
         }
