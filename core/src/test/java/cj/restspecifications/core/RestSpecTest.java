@@ -40,9 +40,7 @@ package cj.restspecifications.core;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.sameInstance;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -347,5 +345,17 @@ public class RestSpecTest {
 
         assertThat(restSpecWithLeftReplacement.replacedPath(), equalTo("/path?leftParameter=lefty&rightParameter={right}"));
         assertThat(restSpecWithRightReplacement.replacedPath(), equalTo("/path?leftParameter=lefty&rightParameter=righty"));
+    }
+
+    @Test
+    public void cannotCreateARestSpecWithoutAURL() throws Exception {
+        String lonelySpecJson = "{}";
+
+        try {
+            new RestSpec("lonelySpecJson", new StringLoader(lonelySpecJson));
+            fail("Did not validate url presence in spec");
+        } catch (RuntimeException cause) {
+            assertThat(cause.getMessage(), equalTo("Spec is missing a 'url'"));
+        }
     }
 }

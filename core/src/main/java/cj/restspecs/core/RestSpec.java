@@ -86,25 +86,29 @@ public class RestSpec {
         try {
             ObjectMapper mapper = new ObjectMapper();
             root = mapper.readValue(is, JsonNode.class);
-
-            name = root.path("name").getValueAsText();
-            url = root.path("url").getValueAsText();
-
-            blowUpIfThereAreFieldsBesidesThese(root, Arrays.asList(
-                    "name",
-                    "url",
-                    "request",
-                    "response"
-            ));
-            blowUpIfThereAreFieldsBesidesThese(root.path("response"), Arrays.asList(
-                    "statusCode",
-                    "header",
-                    "representation",
-                    "representation-ref"
-            ));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+
+        name = root.path("name").getValueAsText();
+        url = root.path("url").getValueAsText();
+
+        if (url == null) {
+            throw new RuntimeException("Spec is missing a 'url'");
+        }
+
+        blowUpIfThereAreFieldsBesidesThese(root, Arrays.asList(
+                "name",
+                "url",
+                "request",
+                "response"
+        ));
+        blowUpIfThereAreFieldsBesidesThese(root.path("response"), Arrays.asList(
+                "statusCode",
+                "header",
+                "representation",
+                "representation-ref"
+        ));
     }
 
     private void blowUpIfThereAreFieldsBesidesThese(JsonNode root, List<String> allowedNodes) {
