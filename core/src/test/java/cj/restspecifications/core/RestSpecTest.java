@@ -426,4 +426,30 @@ public class RestSpecTest {
 
         assertThat(spec.queryParameterValue("ohyeah"), equalTo(""));
     }
+
+    @Test
+    public void specShouldHaveARequest() throws Exception {
+        String boogieSpecJson = "{ \"url\": \"/boogie\" }";
+        RestSpec spec = new RestSpec("boogieSpecJson", new StringLoader(boogieSpecJson));
+
+        try {
+            spec.request();
+            fail("Did not validate request presence");
+        } catch (RuntimeException cause) {
+            assertThat(cause.getMessage(), equalTo("Spec is missing a 'request'"));
+        }
+    }
+
+    @Test
+    public void specShouldHaveAtLeastTheMethodSpecifiedInRequest() throws Exception {
+        String scoobySpecJson = "{ \"url\": \"/scooby\", \"request\": { } }";
+        RestSpec spec = new RestSpec("scoobySpecJson", new StringLoader(scoobySpecJson));
+
+        try {
+            spec.request().method();
+            fail("Did not validate request method presence");
+        } catch (RuntimeException cause) {
+            assertThat(cause.getMessage(), equalTo("Spec is missing a 'request.method'"));
+        }
+    }
 }

@@ -100,34 +100,6 @@ public class RestSpecServletValidatorTest {
             assertThat(error.getCause(), instanceOf(JsonParseException.class));
         }
     }
-
-    @Test
-    public void validateWillThrowExceptionIfThereIsNoRequestInRestSpec() throws Exception {
-        String boogieSpecJson = "{ \"url\": \"/boogie\" }";
-        RestSpec spec = new RestSpec("boogieSpecJson", new StringLoader(boogieSpecJson));
-        HttpServlet testSubject = new FakeHttpServlet("text/plain", "oogie oogie oogie!");
-
-        try {
-            new RestSpecServletValidator().validate(spec, testSubject);
-            fail("Did not validate request presence");
-        } catch (RuntimeException cause) {
-            assertThat(cause.getMessage(), equalTo("Spec is missing a 'request'"));
-        }
-    }
-
-    @Test
-    public void validateWillThrowExceptionIfThereIsNoRequestMethodInRestSpec() throws Exception {
-        String scoobySpecJson = "{ \"url\": \"/scooby\", \"request\": { } }";
-        RestSpec spec = new RestSpec("scoobySpecJson", new StringLoader(scoobySpecJson));
-        HttpServlet testSubject = new FakeHttpServlet("text/plain", "woof!");
-
-        try {
-            new RestSpecServletValidator().validate(spec, testSubject);
-            fail("Did not validate request method presence");
-        } catch (RuntimeException cause) {
-            assertThat(cause.getMessage(), equalTo("Spec is missing a 'request.method'"));
-        }
-    }
 }
 
 class FakeHttpServlet extends HttpServlet {
