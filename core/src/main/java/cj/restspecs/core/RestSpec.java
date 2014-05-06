@@ -42,6 +42,7 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.JsonNode;
@@ -194,7 +195,8 @@ public class RestSpec {
             }
         }
 
-        return "";
+        String parameterNotFoundMessage = String.format("Parameter name '%s' not found in specification.", parameterName);
+        throw new RuntimeException(parameterNotFoundMessage);
     }
 
     public List<String> queryParameterValues(String parameterName) {
@@ -215,7 +217,12 @@ public class RestSpec {
             }
         }
 
-        return values;
+        if (values.isEmpty()) {
+            String parameterNotFoundMessage = String.format("Parameter name '%s' not found in specification.", parameterName);
+            throw new RuntimeException(parameterNotFoundMessage);
+        } else {
+            return values;
+        }
     }
 
     /**

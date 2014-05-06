@@ -390,4 +390,24 @@ public class RestSpecTest {
         assertThat(spec.queryParameterNames(), equalTo(asList("answer")));
         assertThat(spec.queryParameterValues("answer"), equalTo(asList("yes", "no", "maybe")));
     }
+
+    @Test
+    public void whenAskingForAQueryParameterNameThatDoesNotExistThrowAnExceptionBecauseYouProbablyHaveATestLogicError() {
+        String badSpecJson = "{ \"url\": \"/spelling?mistake=not-me\" }";
+        RestSpec spec = new RestSpec("badSpecJson", new StringLoader(badSpecJson));
+
+        try {
+            spec.queryParameterValue("misteak");
+            fail("Should have thrown an exception invoking queryParameterValue because the parameter 'misteak' does not exist");
+        } catch (RuntimeException expected) {
+            assertThat(expected.getMessage(), equalTo("Parameter name 'misteak' not found in specification."));
+        }
+
+        try {
+            spec.queryParameterValues("misstake");
+            fail("Should have thrown an exception invoking queryParameterValues because the parameter 'misstake' does not exist");
+        } catch (RuntimeException expected) {
+            assertThat(expected.getMessage(), equalTo("Parameter name 'misstake' not found in specification."));
+        }
+    }
 }
