@@ -274,11 +274,16 @@ public class RestSpec {
     }
 
     public RestSpec withParameter(String parameterName, Object parameterValue) {
-        HashMap<String, Object> replacements;
-        replacements = new HashMap<String, Object>();
-        replacements.put(parameterName, parameterValue);
+        if (url.contains(parameterName)) {
+            HashMap<String, Object> replacements;
+            replacements = new HashMap<String, Object>();
+            replacements.put(parameterName, parameterValue);
 
-        return new RestSpec(this, replacements);
+            return new RestSpec(this, replacements);
+        } else {
+            String message = String.format("%s does not exist in url", parameterName);
+            throw new RuntimeException(message);
+        }
     }
 
     public String replacedPath() {

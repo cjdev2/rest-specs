@@ -452,4 +452,16 @@ public class RestSpecTest {
             assertThat(cause.getMessage(), equalTo("Spec is missing a 'request.method'"));
         }
     }
+
+    @Test
+    public void pathParameterReplacementWillThrowExceptionIfClientIsTryingToReplaceAParameterThatDoesNotExist() {
+        try {
+            new RestSpec("parameterSpecJson", new StringLoader("{ \"url\": \"/path/{pathReplacement}\" }"))
+                    .withParameter("{pthRplcmnt}", "woops");
+            fail("Should have thrown exception trying to substitute a path parameter that does not exist.");
+        } catch (RuntimeException expected) {
+            assertThat(expected.getMessage(), equalTo("{pthRplcmnt} does not exist in url"));
+        }
+
+    }
 }
