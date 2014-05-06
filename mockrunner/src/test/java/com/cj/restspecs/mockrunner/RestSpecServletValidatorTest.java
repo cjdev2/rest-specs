@@ -100,6 +100,22 @@ public class RestSpecServletValidatorTest {
             assertThat(error.getCause(), instanceOf(JsonParseException.class));
         }
     }
+
+    @Test
+    public void requestWithMultivaluedParameterName() throws Exception {
+        String multivaluedParameterSpecJson = "{ \"url\": \"/echo?message=hello&message=world\", \"request\": { \"method\": \"GET\" }, \"response\": { \"statusCode\": 200 } } }";
+        RestSpec restSpec = new RestSpec("multivaluedParameterSpecJson", new StringLoader(multivaluedParameterSpecJson));
+
+        new RestSpecServletValidator()
+            .validate(restSpec, new HttpServlet() {
+                @Override
+                protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+                    String[] messages = req.getParameterValues("message");
+                    assertThat(messages, equalTo(new String[] { "hello", "world" }));
+                }
+            })
+            .assertNoViolations();
+    }
 }
 
 class FakeHttpServlet extends HttpServlet {

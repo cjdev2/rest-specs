@@ -55,6 +55,8 @@ import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockHttpServletResponse;
 import org.codehaus.jackson.map.ObjectMapper;
 
+import static cj.restspecs.core.RestSpec.*;
+
 public class RestSpecServletValidator {
 
     public static class ValidationResult {
@@ -118,9 +120,9 @@ public class RestSpecServletValidator {
         request.setPathInfo(restSpec.pathMinusQueryStringAndFragment());
         request.setQueryString(stripLeadingQuestionMark(restSpec.queryString()));
 
-        Map<String, String> queryParameters = restSpec.queryParams();
-        for(Map.Entry<String, String> next : queryParameters.entrySet()){
-            request.setupAddParameter(next.getKey(), next.getValue());
+        RestSpec.QueryParameters queryParameters = restSpec.queryParameters();
+        for (String name : queryParameters.names()) {
+            request.setupAddParameter(name, queryParameters.values(name).toArray(new String[]{}));
         }
 
         request.setMethod(restSpec.request().method());
