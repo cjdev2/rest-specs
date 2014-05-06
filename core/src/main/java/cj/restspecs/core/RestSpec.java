@@ -39,6 +39,7 @@ package cj.restspecs.core;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.*;
 
@@ -147,27 +148,100 @@ public class RestSpec {
         };
     }
 
-    public Map<String, String> queryParams() {
-        try {
+    public List<String> queryParameterNames() {
+        List<String> names;
+        names = new ArrayList<String>();
 
-            Map<String, String> queryParams = new HashMap<String, String>();
-            String query = queryString();
-            if (query != "") {
-                for (String param : query.substring(1).split("&")) {
-                    String[] pair = param.split("=");
-                    String key = URLDecoder.decode(pair[0], "UTF-8");
-                    String value = null;
-                    if (pair.length > 1) {
-                        value = URLDecoder.decode(pair[1], "UTF-8");
-                    }
-                    queryParams.put(key, value);
+        String query = queryString();
+        if (query != "") {
+            String queryWithoutInitialDelimiter = query.substring(1);
+            String[] parameters = queryWithoutInitialDelimiter.split("&");
+            for (String parameter : parameters) {
+                String[] pair = parameter.split("=");
+                String key = decodeUrlString(pair[0]);
+
+                if (!names.contains(key)) {
+                    names.add(key);
                 }
             }
-
-            return queryParams;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
         }
+
+        return names;
+    }
+
+    private String decodeUrlString(String input) {
+        try {
+            String result;
+            result = URLDecoder.decode(input, "UTF-8");
+            return result;
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException("Could not decode: " + input, e);
+        }
+    }
+
+    public String queryParameterValue(String parameterName) {
+        String query = queryString();
+        if (query != "") {
+            String queryWithoutInitialDelimiter = query.substring(1);
+            String[] parameters = queryWithoutInitialDelimiter.split("&");
+            for (String parameter : parameters) {
+                String[] pair = parameter.split("=");
+                String key = decodeUrlString(pair[0]);
+
+                if (key.equals(parameterName)) {
+                    return decodeUrlString(pair[1]);
+                }
+            }
+        }
+
+        return "";
+    }
+
+    public List<String> queryParameterValues(String parameterName) {
+        List<String> values;
+        values = new ArrayList<String>();
+
+        String query = queryString();
+        if (query != "") {
+            String queryWithoutInitialDelimiter = query.substring(1);
+            String[] parameters = queryWithoutInitialDelimiter.split("&");
+            for (String parameter : parameters) {
+                String[] pair = parameter.split("=");
+                String key = decodeUrlString(pair[0]);
+
+                if (key.equals(parameterName)) {
+                    values.add(decodeUrlString(pair[1]));
+                }
+            }
+        }
+
+        return values;
+    }
+
+    /**
+     * @deprecated This design does not take into account multi-valued parameters.
+     */
+    @Deprecated
+    public Map<String, String> queryParams() {
+        Map<String, String> queryParams = new HashMap<String, String>();
+        String query = queryString();
+        if (query != "") {
+            String queryWithoutInitialDelimiter = query.substring(1);
+            String[] parameters = queryWithoutInitialDelimiter.split("&");
+            for (String parameter : parameters) {
+                String[] pair = parameter.split("=");
+
+                String key = decodeUrlString(pair[0]);
+                String value = null;
+                if (pair.length > 1) {
+                    value = decodeUrlString(pair[1]);
+                }
+
+                queryParams.put(key, value);
+            }
+        }
+
+        return queryParams;
     }
 
     public String queryString() {

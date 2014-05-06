@@ -37,6 +37,7 @@
  */
 package cj.restspecifications.core;
 
+import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.sameInstance;
@@ -357,5 +358,36 @@ public class RestSpecTest {
         } catch (RuntimeException cause) {
             assertThat(cause.getMessage(), equalTo("Spec is missing a 'url'"));
         }
+    }
+
+    @Test
+    public void getAllQueryParameterNamesFromUrl() {
+        String lotsaNamesSpecJson = "{ \"url\": \"/?a=b&b=c&c=d\" }";
+        RestSpec spec = new RestSpec("lotsaNamesSpecJson", new StringLoader(lotsaNamesSpecJson));
+
+        List<String> names = spec.queryParameterNames();
+        assertThat(names.size(), equalTo(3));
+        assertThat(names.get(0), equalTo("a"));
+        assertThat(names.get(1), equalTo("b"));
+        assertThat(names.get(2), equalTo("c"));
+    }
+
+    @Test
+    public void urlContainsMultipleQueryParameters() {
+        String montyHallSpecJson = "{ \"url\": \"/door?name=a&other=b\" }";
+        RestSpec spec = new RestSpec("montyHallSpecJson", new StringLoader(montyHallSpecJson));
+
+        assertThat(spec.queryParameterNames(), equalTo(asList("name", "other")));
+        assertThat(spec.queryParameterValue("other"), equalTo("b"));
+        assertThat(spec.queryParameterValue("name"), equalTo("a"));
+    }
+
+    @Test
+    public void whenUrlContainsMultipleQueryParametersOfTheSameName() {
+        String dittoSpecJson = "{ \"url\": \"/ditto?answer=yes&answer=no&answer=maybe\" }";
+        RestSpec spec = new RestSpec("dittoSpecJson", new StringLoader(dittoSpecJson));
+
+        assertThat(spec.queryParameterNames(), equalTo(asList("answer")));
+        assertThat(spec.queryParameterValues("answer"), equalTo(asList("yes", "no", "maybe")));
     }
 }
