@@ -165,7 +165,10 @@ public class RestSpec {
                 for (String parameter : parameters) {
                     String[] pair = parameter.split("=");
                     String key = decodeUrlString(pair[0]);
-                    String value = decodeUrlString(pair[1]);
+                    String value = "";
+                    if (pair.length > 1) {
+                        value = decodeUrlString(pair[1]);
+                    }
 
                     if (!memoizedQueryParameters.containsKey(key)) {
                         memoizedQueryParameters.put(key, new ArrayList<String>());

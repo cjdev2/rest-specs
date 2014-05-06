@@ -410,4 +410,20 @@ public class RestSpecTest {
             assertThat(expected.getMessage(), equalTo("Parameter name 'misstake' not found in specification."));
         }
     }
+
+    @Test
+    public void dealWithEmptyQueryParameterValue() {
+        String emptyParamSpecJson = "{ \"url\": \"/empty?ohno=\" }";
+        RestSpec spec = new RestSpec("emptyParamSpecJson", new StringLoader(emptyParamSpecJson));
+
+        assertThat(spec.queryParameterValue("ohno"), equalTo(""));
+    }
+
+    @Test
+    public void dealWithMissingQueryParameterValue() {
+        String missingParamSpecJson = "{ \"url\": \"/missing?ohyeah\" }";
+        RestSpec spec = new RestSpec("missingParamSpecJson", new StringLoader(missingParamSpecJson));
+
+        assertThat(spec.queryParameterValue("ohyeah"), equalTo(""));
+    }
 }
