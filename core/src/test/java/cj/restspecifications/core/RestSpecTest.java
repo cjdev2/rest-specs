@@ -365,7 +365,7 @@ public class RestSpecTest {
         String lotsaNamesSpecJson = "{ \"url\": \"/?a=b&b=c&c=d\" }";
         RestSpec spec = new RestSpec("lotsaNamesSpecJson", new StringLoader(lotsaNamesSpecJson));
 
-        List<String> names = spec.queryParameterNames();
+        List<String> names = spec.queryParameters().names();
         assertThat(names.size(), equalTo(3));
         assertThat(names.get(0), equalTo("a"));
         assertThat(names.get(1), equalTo("b"));
@@ -377,7 +377,7 @@ public class RestSpecTest {
         String montyHallSpecJson = "{ \"url\": \"/door?name=a&other=b\" }";
         RestSpec spec = new RestSpec("montyHallSpecJson", new StringLoader(montyHallSpecJson));
 
-        assertThat(spec.queryParameterNames(), equalTo(asList("name", "other")));
+        assertThat(spec.queryParameters().names(), equalTo(asList("name", "other")));
         assertThat(spec.queryParameterValue("other"), equalTo("b"));
         assertThat(spec.queryParameterValue("name"), equalTo("a"));
     }
@@ -387,8 +387,8 @@ public class RestSpecTest {
         String dittoSpecJson = "{ \"url\": \"/ditto?answer=yes&answer=no&answer=maybe\" }";
         RestSpec spec = new RestSpec("dittoSpecJson", new StringLoader(dittoSpecJson));
 
-        assertThat(spec.queryParameterNames(), equalTo(asList("answer")));
-        assertThat(spec.queryParameterValues("answer"), equalTo(asList("yes", "no", "maybe")));
+        assertThat(spec.queryParameters().names(), equalTo(asList("answer")));
+        assertThat(spec.queryParameters().values("answer"), equalTo(asList("yes", "no", "maybe")));
     }
 
     @Test
@@ -404,7 +404,7 @@ public class RestSpecTest {
         }
 
         try {
-            spec.queryParameterValues("misstake");
+            spec.queryParameters().values("misstake");
             fail("Should have thrown an exception invoking queryParameterValues because the parameter 'misstake' does not exist");
         } catch (RuntimeException expected) {
             assertThat(expected.getMessage(), equalTo("Parameter name 'misstake' not found in specification."));

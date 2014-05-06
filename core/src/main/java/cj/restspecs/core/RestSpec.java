@@ -42,7 +42,6 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.JsonNode;
@@ -60,6 +59,7 @@ public class RestSpec {
     private final String name, url;
     private final Loader loader;
     private final Map<String, Object> replacements;
+    private final QueryParameters queryParameters;
 
     private RestSpec(RestSpec originalSpec, Map<String, Object> replacements) {
         this.root = originalSpec.root;
@@ -70,6 +70,7 @@ public class RestSpec {
         this.replacements = new HashMap<String, Object>();
         this.replacements.putAll(originalSpec.replacements);
         this.replacements.putAll(replacements);
+        this.queryParameters = new QueryParameters(queryString());
     }
 
     public RestSpec(String specName) {
@@ -111,6 +112,7 @@ public class RestSpec {
                 "representation",
                 "representation-ref"
         ));
+        queryParameters = new QueryParameters(queryString());
     }
 
     private void blowUpIfThereAreFieldsBesidesThese(JsonNode root, List<String> allowedNodes) {
@@ -149,25 +151,50 @@ public class RestSpec {
         };
     }
 
-    public List<String> queryParameterNames() {
-        List<String> names;
-        names = new ArrayList<String>();
+    public class QueryParameters {
+        private final List<String> namesInOrder;
+        private final Map<String, List<String>> memoizedQueryParameters;
 
-        String query = queryString();
-        if (query != "") {
-            String queryWithoutInitialDelimiter = query.substring(1);
-            String[] parameters = queryWithoutInitialDelimiter.split("&");
-            for (String parameter : parameters) {
-                String[] pair = parameter.split("=");
-                String key = decodeUrlString(pair[0]);
+        private QueryParameters(String queryString) {
+            namesInOrder = new ArrayList<String>();
+            memoizedQueryParameters = new HashMap<String, List<String>>();
 
-                if (!names.contains(key)) {
-                    names.add(key);
+            if (queryString != "") {
+                String queryWithoutInitialDelimiter = queryString.substring(1);
+                String[] parameters = queryWithoutInitialDelimiter.split("&");
+                for (String parameter : parameters) {
+                    String[] pair = parameter.split("=");
+                    String key = decodeUrlString(pair[0]);
+                    String value = decodeUrlString(pair[1]);
+
+                    if (!memoizedQueryParameters.containsKey(key)) {
+                        memoizedQueryParameters.put(key, new ArrayList<String>());
+                        namesInOrder.add(key);
+                    }
+
+                    List<String> values;
+                    values = memoizedQueryParameters.get(key);
+                    values.add(value);
                 }
             }
         }
 
-        return names;
+        public List<String> names() {
+            return namesInOrder;
+        }
+
+        public String value(String name) {
+            return values(name).get(0);
+        }
+
+        public List<String> values(String name) {
+            if (memoizedQueryParameters.containsKey(name)) {
+                return memoizedQueryParameters.get(name);
+            } else {
+                String parameterNotFoundMessage = String.format("Parameter name '%s' not found in specification.", name);
+                throw new RuntimeException(parameterNotFoundMessage);
+            }
+        }
     }
 
     private String decodeUrlString(String input) {
@@ -181,48 +208,11 @@ public class RestSpec {
     }
 
     public String queryParameterValue(String parameterName) {
-        String query = queryString();
-        if (query != "") {
-            String queryWithoutInitialDelimiter = query.substring(1);
-            String[] parameters = queryWithoutInitialDelimiter.split("&");
-            for (String parameter : parameters) {
-                String[] pair = parameter.split("=");
-                String key = decodeUrlString(pair[0]);
-
-                if (key.equals(parameterName)) {
-                    return decodeUrlString(pair[1]);
-                }
-            }
-        }
-
-        String parameterNotFoundMessage = String.format("Parameter name '%s' not found in specification.", parameterName);
-        throw new RuntimeException(parameterNotFoundMessage);
+        return queryParameters.value(parameterName);
     }
 
-    public List<String> queryParameterValues(String parameterName) {
-        List<String> values;
-        values = new ArrayList<String>();
-
-        String query = queryString();
-        if (query != "") {
-            String queryWithoutInitialDelimiter = query.substring(1);
-            String[] parameters = queryWithoutInitialDelimiter.split("&");
-            for (String parameter : parameters) {
-                String[] pair = parameter.split("=");
-                String key = decodeUrlString(pair[0]);
-
-                if (key.equals(parameterName)) {
-                    values.add(decodeUrlString(pair[1]));
-                }
-            }
-        }
-
-        if (values.isEmpty()) {
-            String parameterNotFoundMessage = String.format("Parameter name '%s' not found in specification.", parameterName);
-            throw new RuntimeException(parameterNotFoundMessage);
-        } else {
-            return values;
-        }
+    public QueryParameters queryParameters() {
+        return queryParameters;
     }
 
     /**
