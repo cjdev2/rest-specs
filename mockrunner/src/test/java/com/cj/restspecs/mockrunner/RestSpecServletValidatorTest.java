@@ -155,7 +155,8 @@ public class RestSpecServletValidatorTest {
 
     @Test
     public void supportRequestBody() throws Exception {
-        String spec = "{ \"url\": \"/echo\", \"request\": { \"method\": \"POST\", \"representation\": \"ola\" }, \"response\": { \"statusCode\": 200 } } }";        RestSpec restSpec = new RestSpec("spec", new StringLoader(spec));
+        String spec = "{ \"url\": \"/echo\", \"request\": { \"method\": \"POST\", \"representation\": \"ola\" }, \"response\": { \"statusCode\": 200 } } }";
+        RestSpec restSpec = new RestSpec("spec", new StringLoader(spec));
 
         new RestSpecServletValidator()
                 .validate(restSpec, new HttpServlet() {
@@ -165,6 +166,38 @@ public class RestSpecServletValidatorTest {
                     }
                 })
                 .assertNoViolations();
+    }
+
+    @Test
+    public void validateAllResponseHeaders() throws Exception {
+        String spec = "{ \"url\": \"/spicy\", \"request\": { \"method\": \"GET\" }, \"response\": { \"statusCode\": 200, \"header\": { \"jalapeno\": \"poppers\" } } } }";
+        RestSpec restSpec = new RestSpec("spec", new StringLoader(spec));
+
+        RestSpecServletValidator.ValidationResult violations = new RestSpecServletValidator()
+                .validate(restSpec, new HttpServlet() {
+                    @Override
+                    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+                    }
+                });
+        assertThat(violations.violations.size(), equalTo(1));
+        assertThat(violations.violations.get(0).description, equalTo("Expected header 'jalapeno' set to 'poppers'"));
+    }
+
+    @Test
+    public void validateResponseHeaderValues() throws Exception {
+        String spec = "{ \"url\": \"/spicy\", \"request\": { \"method\": \"GET\" }, \"response\": { \"statusCode\": 200, \"header\": { \"luke\": \"landWalker\" } } } }";
+        RestSpec restSpec = new RestSpec("spec", new StringLoader(spec));
+
+        RestSpecServletValidator.ValidationResult violations = new RestSpecServletValidator()
+                .validate(restSpec, new HttpServlet() {
+                    @Override
+                    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+                        response.addHeader("luke", "skywalker");
+                    }
+                });
+        assertThat(violations.violations.size(), equalTo(1));
+        assertThat(violations.violations.get(0).description, equalTo("Expected header 'luke' set to 'landWalker'"));
     }
 }
 

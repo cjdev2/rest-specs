@@ -40,10 +40,7 @@ package com.cj.restspecs.mockrunner;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.servlet.http.HttpServlet;
 
@@ -145,23 +142,27 @@ public class RestSpecServletValidator {
             violations.add(new Violation("Status code should have been " + restSpec.response().statusCode() + " but was " + response.getStatusCode()));
         }
 
+        violations.addAll(validateResponseHeaders(restSpec, response));
+
         if (restSpec.response().representation() != null) {
-            violations.addAll(validateContentType(restSpec, response));
             violations.addAll(validateResponseBody(restSpec, response));
         }
 
         return new ValidationResult(violations);
     }
 
-    private List<Violation> validateContentType(RestSpec restSpec, MockHttpServletResponse response) {
+    private List<Violation> validateResponseHeaders(RestSpec restSpec, MockHttpServletResponse response) {
         List<Violation> violations;
+        violations = new ArrayList<Violation>();
+        List<String> headerFieldNames = restSpec.response().header().fieldNames();
 
-        final String expectedContentType = restSpec.response().representation().contentType();
-        final String actualContentType = response.getHeader("Content-Type");
-        if (!expectedContentType.equals(actualContentType)) {
-            violations = Collections.singletonList(new Violation("Content type of the response should have been  " + expectedContentType + " but was " + actualContentType));
-        } else {
-            violations = Collections.emptyList();
+        for (String fieldName : headerFieldNames) {
+            for (String fieldValue : restSpec.response().header().fieldsNamed(fieldName)) {
+                List headerList = response.getHeaderList(fieldName);
+                if (headerList == null || !headerList.contains(fieldValue)) {
+                    violations.add(new Violation(String.format("Expected header '%s' set to '%s'", fieldName, fieldValue)));
+                }
+            }
         }
 
         return violations;
