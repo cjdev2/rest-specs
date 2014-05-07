@@ -39,6 +39,7 @@ package com.cj.restspecs.mockrunner;
 
 import cj.restspecs.core.RestSpec;
 import cj.restspecs.core.io.StringLoader;
+import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.JsonParseException;
 import org.junit.Test;
 
@@ -147,6 +148,20 @@ public class RestSpecServletValidatorTest {
                     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
                         assertThat(request.getRequestURI(), notNullValue());
                         assertThat(request.getRequestURI(), equalTo("/echo"));
+                    }
+                })
+                .assertNoViolations();
+    }
+
+    @Test
+    public void supportRequestBody() throws Exception {
+        String spec = "{ \"url\": \"/echo\", \"request\": { \"method\": \"POST\", \"representation\": \"ola\" }, \"response\": { \"statusCode\": 200 } } }";        RestSpec restSpec = new RestSpec("spec", new StringLoader(spec));
+
+        new RestSpecServletValidator()
+                .validate(restSpec, new HttpServlet() {
+                    @Override
+                    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+                        assertThat(IOUtils.toString(request.getInputStream()), equalTo("ola"));
                     }
                 })
                 .assertNoViolations();

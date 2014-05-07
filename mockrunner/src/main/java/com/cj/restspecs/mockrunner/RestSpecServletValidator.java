@@ -47,6 +47,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServlet;
 
+import cj.restspecs.core.model.Representation;
 import org.apache.commons.io.FileUtils;
 
 import cj.restspecs.core.RestSpec;
@@ -115,6 +116,11 @@ public class RestSpecServletValidator {
             for(String value : restSpec.request().header().fieldsNamed(name)){
                 request.setHeader(name, value);
             }
+        }
+
+        Representation requestRepresentation = restSpec.request().representation();
+        if (requestRepresentation != null) {
+            request.setBodyContent(requestRepresentation.asText());
         }
 
         request.setRequestURI(restSpec.pathMinusQueryStringAndFragment());
