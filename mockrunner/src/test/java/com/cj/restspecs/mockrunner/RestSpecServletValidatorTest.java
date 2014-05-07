@@ -50,6 +50,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
@@ -115,6 +116,40 @@ public class RestSpecServletValidatorTest {
                 }
             })
             .assertNoViolations();
+    }
+
+    @Test
+    public void failureToNormalizeJsonWillThrowAnException() {
+        String specWithInvalidJsonInResponse = "{ \"url\": \"/badjson\", \"request\": { \"method\": \"GET\" }, \"response\": { \"statusCode\": 200, \"header\": { \"Content-Type\": \"application/json\" }, \"representation\": \"{ blah \" } } }";
+        RestSpec restSpec = new RestSpec("specWithInvalidJsonInResponse", new StringLoader(specWithInvalidJsonInResponse));
+
+        try {
+        new RestSpecServletValidator()
+                .validate(restSpec, new HttpServlet() {
+                    @Override
+                    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+                    }
+                })
+                .assertNoViolations();
+        } catch (Exception error) {
+            assertThat(error.getMessage(), equalTo(String.format("Failed to normalize JSON: %s", "{ blah ")));
+        }
+    }
+
+    @Test
+    public void httpServletRequestIsProperlyPopulated() throws Exception {
+        String spec = "{ \"url\": \"/echo?message=hello&message=world\", \"request\": { \"method\": \"GET\" }, \"response\": { \"statusCode\": 200 } } }";
+        RestSpec restSpec = new RestSpec("spec", new StringLoader(spec));
+
+        new RestSpecServletValidator()
+                .validate(restSpec, new HttpServlet() {
+                    @Override
+                    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+                        assertThat(request.getRequestURI(), notNullValue());
+                        assertThat(request.getRequestURI(), equalTo("/echo"));
+                    }
+                })
+                .assertNoViolations();
     }
 }
 

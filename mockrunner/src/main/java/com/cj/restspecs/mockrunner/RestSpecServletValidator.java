@@ -117,6 +117,7 @@ public class RestSpecServletValidator {
             }
         }
 
+        request.setRequestURI(restSpec.pathMinusQueryStringAndFragment());
         request.setPathInfo(restSpec.pathMinusQueryStringAndFragment());
         request.setQueryString(stripLeadingQuestionMark(restSpec.queryString()));
 
@@ -200,7 +201,7 @@ public class RestSpecServletValidator {
             outputJson = mapper.writeValueAsString(mappedInput);
             return outputJson;
         } catch (Exception error) {
-            throw new RuntimeException(error);
+            throw new RuntimeException("Failed to normalize JSON: " + inputJson, error);
         }
     }
 }
