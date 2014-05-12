@@ -138,8 +138,15 @@ public class RestSpecServletValidator {
         List<Violation> violations;
         violations = new ArrayList<Violation>();
 
-        if (restSpec.response().statusCode() != response.getStatusCode()) {
-            violations.add(new Violation("Status code should have been " + restSpec.response().statusCode() + " but was " + response.getStatusCode()));
+        int expectedStatusCode = restSpec.response().statusCode();
+        int actualResponseCode = response.getStatusCode();
+
+        if (response.wasErrorSent()) {
+            actualResponseCode = response.getErrorCode();
+        }
+
+        if (expectedStatusCode != actualResponseCode) {
+            violations.add(new Violation("Status code should have been " + expectedStatusCode + " but was " + actualResponseCode));
         }
 
         violations.addAll(validateResponseHeaders(restSpec, response));

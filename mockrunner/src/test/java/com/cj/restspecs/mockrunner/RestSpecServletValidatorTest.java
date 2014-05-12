@@ -199,6 +199,20 @@ public class RestSpecServletValidatorTest {
         assertThat(violations.violations.size(), equalTo(1));
         assertThat(violations.violations.get(0).description, equalTo("Expected header 'luke' set to 'landWalker'"));
     }
+
+    @Test
+    public void servletApiSendErrorCanBeUsedAndWillBeCheckedForViolations() throws Exception {
+        String sendErrorSpecJson = "{ \"url\": \"/senderror\", \"request\": { \"method\": \"GET\" }, \"response\": { \"statusCode\": 302 } }";
+        RestSpec spec = new RestSpec("sendErrorSpecJson", new StringLoader(sendErrorSpecJson));
+
+        RestSpecServletValidator.ValidationResult violations;
+        violations = new RestSpecServletValidator()
+            .validate(spec, new HttpServlet() {
+            });
+
+        assertThat(violations.violations.size(), equalTo(1));
+        assertThat(violations.violations.get(0).description, equalTo("Status code should have been 302 but was 405"));
+    }
 }
 
 class FakeHttpServlet extends HttpServlet {
