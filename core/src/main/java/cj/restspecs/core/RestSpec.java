@@ -220,6 +220,8 @@ public class RestSpec {
 
     /**
      * @deprecated This design does not take into account multi-valued parameters.
+     * @see #queryParameters()
+     * @see QueryParameters#values
      */
     @Deprecated
     public Map<String, String> queryParams() {
