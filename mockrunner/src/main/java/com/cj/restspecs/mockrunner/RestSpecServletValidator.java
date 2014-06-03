@@ -37,23 +37,18 @@
  */
 package com.cj.restspecs.mockrunner;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.*;
-
-import javax.servlet.http.HttpServlet;
-
-import cj.restspecs.core.model.Representation;
-import org.apache.commons.io.FileUtils;
-
 import cj.restspecs.core.RestSpec;
-
+import cj.restspecs.core.model.Representation;
 import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockHttpServletResponse;
 import org.codehaus.jackson.map.ObjectMapper;
 
-import static cj.restspecs.core.RestSpec.*;
+import javax.servlet.http.HttpServlet;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class RestSpecServletValidator {
 
@@ -215,7 +210,7 @@ public class RestSpecServletValidator {
             outputJson = mapper.writeValueAsString(mappedInput);
             return outputJson;
         } catch (Exception error) {
-            throw new RuntimeException("Failed to normalize JSON: " + inputJson, error);
+            throw new RuntimeException(String.format("Failed to normalize JSON: '%s'", inputJson), error);
         }
     }
 }

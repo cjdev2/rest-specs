@@ -133,7 +133,7 @@ public class RestSpecServletValidatorTest {
                 })
                 .assertNoViolations();
         } catch (Exception error) {
-            assertThat(error.getMessage(), equalTo(String.format("Failed to normalize JSON: %s", "{ blah ")));
+            assertThat(error.getMessage(), equalTo("Failed to normalize JSON: '{ blah '"));
         }
     }
 
