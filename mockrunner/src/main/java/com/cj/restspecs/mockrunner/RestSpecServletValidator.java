@@ -91,7 +91,7 @@ public class RestSpecServletValidator {
 
         //given
         MockHttpServletRequest req = buildRequestFromRestSpec(rs);
-        MockHttpServletResponse res = new MockHttpServletResponseWithNiceExceptionsForUnsupportedFunctionality();
+        MockHttpServletResponse res = new MockHttpServletResponse();
 
         //when
         testSubject.service(req, res);
@@ -161,8 +161,9 @@ public class RestSpecServletValidator {
         for (String fieldName : headerFieldNames) {
             for (String fieldValue : restSpec.response().header().fieldsNamed(fieldName)) {
                 List headerList = response.getHeaderList(fieldName);
+                String realHeaderValue = response.getHeader(fieldName);
                 if (headerList == null || !headerList.contains(fieldValue)) {
-                    violations.add(new Violation(String.format("Expected header '%s' set to '%s'", fieldName, fieldValue)));
+                    violations.add(new Violation(String.format("Expected header '%s' set to '%s', but was '%s'", fieldName, fieldValue, realHeaderValue)));
                 }
             }
         }
@@ -212,12 +213,5 @@ public class RestSpecServletValidator {
         } catch (Exception error) {
             throw new RuntimeException(String.format("Failed to normalize JSON: '%s'", inputJson), error);
         }
-    }
-}
-
-class MockHttpServletResponseWithNiceExceptionsForUnsupportedFunctionality extends MockHttpServletResponse {
-    @Override
-    public PrintWriter getWriter() throws IOException {
-        throw new UnsupportedOperationException("getWriter not implemented by MockRunner--sorry!");
     }
 }

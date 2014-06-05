@@ -49,6 +49,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -181,7 +182,7 @@ public class RestSpecServletValidatorTest {
                     }
                 });
         assertThat(violations.violations.size(), equalTo(1));
-        assertThat(violations.violations.get(0).description, equalTo("Expected header 'jalapeno' set to 'poppers'"));
+        assertThat(violations.violations.get(0).description, equalTo("Expected header 'jalapeno' set to 'poppers', but was 'null'"));
     }
 
     @Test
@@ -197,7 +198,7 @@ public class RestSpecServletValidatorTest {
                     }
                 });
         assertThat(violations.violations.size(), equalTo(1));
-        assertThat(violations.violations.get(0).description, equalTo("Expected header 'luke' set to 'landWalker'"));
+        assertThat(violations.violations.get(0).description, equalTo("Expected header 'luke' set to 'landWalker', but was 'skywalker'"));
     }
 
     @Test
@@ -212,6 +213,28 @@ public class RestSpecServletValidatorTest {
 
         assertThat(violations.violations.size(), equalTo(1));
         assertThat(violations.violations.get(0).description, equalTo("Status code should have been 302 but was 405"));
+    }
+
+    @Test
+    public void canGetWriterForResponse() throws Exception {
+        String simpleJsonSpecJson = "{ \"url\": \"/echo\", \"request\": { \"method\": \"GET\" }, \"response\": { \"statusCode\": 200, \"header\": { \"Content-Type\": \"text/plain\" }, \"representation\": \"marco!\" } }";
+        RestSpec restSpec = new RestSpec("simpleJsonSpec", new StringLoader(simpleJsonSpecJson));
+
+        HttpServlet testSubject = new HttpServlet() {
+            @Override
+            protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+                resp.setContentType("text/plain");
+                PrintWriter writer = resp.getWriter();
+                writer.print("marco!");
+                writer.flush();
+            }
+        };
+
+        //when
+        RestSpecServletValidator.ValidationResult result = new RestSpecServletValidator().validate(restSpec, testSubject);
+
+        //then
+        result.assertNoViolations();
     }
 }
 
