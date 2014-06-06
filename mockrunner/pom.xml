@@ -1,32 +1,32 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>com.cj.restspecs</groupId>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.cj.restspecs</groupId>
         <artifactId>rest-specs-pom</artifactId>
         <version>7.3.9-SNAPSHOT</version>
-	</parent>
+    </parent>
 
-	<artifactId>rest-specs-mockrunner</artifactId>
-	<name>${project.artifactId}</name>	
-	
-	<dependencies>
-		<dependency>
-		  <groupId>com.mockrunner</groupId>
-		  <artifactId>mockrunner</artifactId>
-		  <version>0.3.1</version>
-		  <scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.cj.restspecs</groupId>
-		    <artifactId>rest-specs-core</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>servletapi</groupId>
-			<artifactId>servletapi</artifactId>
-			<version>2.2</version>
-		    <scope>provided</scope>
-		</dependency>
-	</dependencies>
+    <artifactId>rest-specs-mockrunner</artifactId>
+    <name>${project.artifactId}</name>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.mockrunner</groupId>
+            <artifactId>mockrunner-servlet</artifactId>
+            <version>1.0.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.cj.restspecs</groupId>
+            <artifactId>rest-specs-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>3.0.1</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
 </project>

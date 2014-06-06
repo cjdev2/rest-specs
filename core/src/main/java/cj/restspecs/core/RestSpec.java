@@ -37,22 +37,21 @@
  */
 package cj.restspecs.core;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.util.*;
-
-import org.apache.commons.io.IOUtils;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
-
 import cj.restspecs.core.io.ClasspathLoader;
 import cj.restspecs.core.io.Loader;
 import cj.restspecs.core.model.Header;
 import cj.restspecs.core.model.Representation;
 import cj.restspecs.core.model.Request;
 import cj.restspecs.core.model.Response;
+import org.apache.commons.io.IOUtils;
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.map.ObjectMapper;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.*;
 
 public class RestSpec {
     private JsonNode root;
@@ -93,10 +92,10 @@ public class RestSpec {
             throw new RuntimeException(e);
         }
 
-        name = root.path("name").getValueAsText();
-        url = root.path("url").getValueAsText();
+        name = root.path("name").asText();
+        url = root.path("url").asText();
 
-        if (url == null) {
+        if (url == null || url.isEmpty()) {
             throw new RuntimeException("Spec is missing a 'url'");
         }
 
@@ -159,7 +158,7 @@ public class RestSpec {
             namesInOrder = new ArrayList<String>();
             memoizedQueryParameters = new HashMap<String, List<String>>();
 
-            if (queryString != "") {
+            if (!"".equals(queryString)) {
                 String queryWithoutInitialDelimiter = queryString.substring(1);
                 String[] parameters = queryWithoutInitialDelimiter.split("&");
                 for (String parameter : parameters) {
@@ -227,7 +226,7 @@ public class RestSpec {
     public Map<String, String> queryParams() {
         Map<String, String> queryParams = new HashMap<String, String>();
         String query = queryString();
-        if (query != "") {
+        if (!"".equals(query)) {
             String queryWithoutInitialDelimiter = query.substring(1);
             String[] parameters = queryWithoutInitialDelimiter.split("&");
             for (String parameter : parameters) {
