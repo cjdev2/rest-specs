@@ -67,6 +67,14 @@ public class RestSpecServletValidator {
                 throw new RuntimeException(text.toString());
             }
         }
+
+        public String description() {
+            return Violation.composeMessage(violations);
+        }
+
+        public boolean matches() {
+            return violations.isEmpty();
+        }
     }
 
     public static class Violation {
@@ -75,6 +83,14 @@ public class RestSpecServletValidator {
         public Violation(String description) {
             super();
             this.description = description;
+        }
+
+        public static String composeMessage(List<Violation> violations) {
+            StringBuilder message = new StringBuilder();
+            for (Violation violation : violations) {
+                message.append(violation.description).append("\n");
+            }
+            return message.toString();
         }
     }
     
