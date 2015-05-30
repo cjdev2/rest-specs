@@ -40,7 +40,6 @@ package com.cj.restspecs.mockrunner;
 import cj.restspecs.core.RestSpec;
 import cj.restspecs.core.io.StringLoader;
 import org.apache.commons.io.IOUtils;
-import org.codehaus.jackson.JsonParseException;
 import org.junit.Test;
 
 import javax.servlet.ServletException;
@@ -51,11 +50,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.core.IsInstanceOf.instanceOf;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 
 public class RestSpecServletValidatorTest {
     @Test
@@ -89,19 +85,15 @@ public class RestSpecServletValidatorTest {
     }
 
     @Test
-    public void invalidJsonResponseBodyWillThrowAnExceptionCausingTheTestToError() {
+    public void invalidJsonResponseBody() throws Exception {
         String simpleJsonSpecJson = "{ \"url\": \"/echo\", \"request\": { \"method\": \"GET\" }, \"response\": { \"statusCode\": 200, \"header\": { \"Content-Type\": \"application/json\" }, \"representation\": \"{}\" } }";
 
         RestSpec restSpec = new RestSpec("simpleJsonSpec", new StringLoader(simpleJsonSpecJson));
         HttpServlet testSubject = new FakeHttpServlet("application/json", "{\n   \"a");
 
-        try {
-            new RestSpecServletValidator().validate(restSpec, testSubject).assertNoViolations();
-            fail("Should have thrown an exception");
-        } catch (Exception error) {
-            assertThat(error, instanceOf(RuntimeException.class));
-            assertThat(error.getCause(), instanceOf(JsonParseException.class));
-        }
+        RestSpecServletValidator.ValidationResult validationResult = new RestSpecServletValidator().validate(restSpec, testSubject);
+        assertThat(validationResult.violations.size(), is(1));
+        assertThat(validationResult.violations.get(0).description, is("actual  : Failed to normalize JSON: '{\n   \"a'"));
     }
 
     @Test
@@ -110,32 +102,32 @@ public class RestSpecServletValidatorTest {
         RestSpec restSpec = new RestSpec("multivaluedParameterSpecJson", new StringLoader(multivaluedParameterSpecJson));
 
         new RestSpecServletValidator()
-            .validate(restSpec, new HttpServlet() {
-                @Override
-                protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-                    String[] messages = req.getParameterValues("message");
-                    assertThat(messages, equalTo(new String[] { "hello", "world" }));
-                }
-            })
-            .assertNoViolations();
-    }
-
-    @Test
-    public void failureToNormalizeJsonWillThrowAnException() {
-        String specWithInvalidJsonInResponse = "{ \"url\": \"/badjson\", \"request\": { \"method\": \"GET\" }, \"response\": { \"statusCode\": 200, \"header\": { \"Content-Type\": \"application/json\" }, \"representation\": \"{ blah \" } } }";
-        RestSpec restSpec = new RestSpec("specWithInvalidJsonInResponse", new StringLoader(specWithInvalidJsonInResponse));
-
-        try {
-        new RestSpecServletValidator()
                 .validate(restSpec, new HttpServlet() {
                     @Override
-                    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+                    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+                        String[] messages = req.getParameterValues("message");
+                        assertThat(messages, equalTo(new String[]{"hello", "world"}));
                     }
                 })
                 .assertNoViolations();
-        } catch (Exception error) {
-            assertThat(error.getMessage(), equalTo("Failed to normalize JSON: '{ blah '"));
-        }
+    }
+
+    @Test
+    public void failureToNormalizeJson() throws Exception {
+        String specWithInvalidJsonInResponse = "{ \"url\": \"/badjson\", \"request\": { \"method\": \"GET\" }, \"response\": { \"statusCode\": 200, \"header\": { \"Content-Type\": \"application/json\" }, \"representation\": \"{ blah \" } } }";
+        RestSpec restSpec = new RestSpec("specWithInvalidJsonInResponse", new StringLoader(specWithInvalidJsonInResponse));
+
+        RestSpecServletValidator.ValidationResult validationResult = new RestSpecServletValidator()
+                .validate(restSpec, new HttpServlet() {
+                    @Override
+                    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+                        response.addHeader("Content-Type", "application/json");
+                    }
+                });
+
+        assertThat(validationResult.violations.size(), equalTo(2));
+        assertThat(validationResult.violations.get(0).description, equalTo("expected: Failed to normalize JSON: '{ blah '"));
+        assertThat(validationResult.violations.get(1).description, equalTo("actual  : Failed to normalize JSON: ''"));
     }
 
     @Test
@@ -208,8 +200,8 @@ public class RestSpecServletValidatorTest {
 
         RestSpecServletValidator.ValidationResult violations;
         violations = new RestSpecServletValidator()
-            .validate(spec, new HttpServlet() {
-            });
+                .validate(spec, new HttpServlet() {
+                });
 
         assertThat(violations.violations.size(), equalTo(1));
         assertThat(violations.violations.get(0).description, equalTo("Status code should have been 302 but was 405"));

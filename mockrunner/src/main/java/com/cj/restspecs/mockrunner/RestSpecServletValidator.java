@@ -39,13 +39,12 @@ package com.cj.restspecs.mockrunner;
 
 import cj.restspecs.core.RestSpec;
 import cj.restspecs.core.model.Representation;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockHttpServletResponse;
-import org.codehaus.jackson.map.ObjectMapper;
 
 import javax.servlet.http.HttpServlet;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -172,27 +171,40 @@ public class RestSpecServletValidator {
     }
 
     private List<Violation> validateResponseBody(RestSpec restSpec, MockHttpServletResponse response) {
-        List<Violation> violations;
-
-        String expectedRepresentation;
-        String actualRepresentation;
-
-        if (isJsonContent(restSpec)) {
-            expectedRepresentation = normalize(restSpec.response().representation().asText());
-            actualRepresentation = normalize(response.getOutputStreamContent());
+        List<Violation> violations = new ArrayList<Violation>();
+        RepresentationsResult representationsResult = getRepresentations(restSpec, response);
+        if(representationsResult.hasViolations()) {
+            violations.addAll(representationsResult.violations());
         } else {
-            expectedRepresentation = restSpec.response().representation().asText();
-            actualRepresentation = response.getOutputStreamContent();
+            boolean representationsAreEquivalent = representationsResult.expected().equals(representationsResult.actual());
+            if (!representationsAreEquivalent) {
+                violations.add(new Violation("The response representation should have been " + representationsResult.expected() + " but was " + representationsResult.actual()));
+            }
         }
-
-        boolean representationsAreEquivalent = expectedRepresentation.equals(actualRepresentation);
-        if (!representationsAreEquivalent) {
-            violations = Collections.singletonList(new Violation("The response representation should have been " + expectedRepresentation + " but was " + actualRepresentation));
-        } else {
-            violations = Collections.emptyList();
-        }
-
         return violations;
+    }
+
+    private RepresentationsResult getRepresentations(RestSpec restSpec, MockHttpServletResponse response) {
+        List<Violation> violations = new ArrayList<Violation>();
+        String expected = null;
+        String actual = null;
+        if (isJsonContent(restSpec)) {
+            try {
+                expected = normalize(restSpec.response().representation().asText());
+            } catch(RuntimeException ex){
+                violations.add(new Violation("expected: " + ex.getMessage()));
+            }
+
+            try {
+                actual = normalize(response.getOutputStreamContent());
+            } catch(RuntimeException ex){
+                violations.add(new Violation("actual  : " + ex.getMessage()));
+            }
+        } else {
+            expected = restSpec.response().representation().asText();
+            actual = response.getOutputStreamContent();
+        }
+        return new RepresentationsResult(expected, actual, violations);
     }
 
     private boolean isJsonContent(RestSpec restSpec) {
@@ -206,12 +218,43 @@ public class RestSpecServletValidator {
             String outputJson;
 
             ObjectMapper mapper = new ObjectMapper();
+            mapper.configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true);
+
+
             Object mappedInput = mapper.readValue(inputJson, Object.class);
 
             outputJson = mapper.writeValueAsString(mappedInput);
             return outputJson;
         } catch (Exception error) {
             throw new RuntimeException(String.format("Failed to normalize JSON: '%s'", inputJson), error);
+        }
+    }
+
+    private static class RepresentationsResult {
+        private final String expected;
+        private final String actual;
+        private final List<Violation> violations;
+
+        public RepresentationsResult(String expected, String actual, List<Violation> violations) {
+            this.expected = expected;
+            this.actual = actual;
+            this.violations = violations;
+        }
+
+        public boolean hasViolations() {
+            return !violations.isEmpty();
+        }
+
+        public List<Violation> violations() {
+            return violations;
+        }
+
+        public String expected() {
+            return expected;
+        }
+
+        public String actual() {
+            return actual;
         }
     }
 }
