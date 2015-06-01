@@ -4,10 +4,10 @@
     <parent>
         <groupId>com.cj.restspecs</groupId>
         <artifactId>rest-specs-pom</artifactId>
-        <version>7.3.10-SNAPSHOT</version>
+        <version>7.4.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>http-objects</artifactId>
+    <artifactId>restspecs-http-objects</artifactId>
     <name>${project.artifactId}</name>
 
     <dependencies>
