@@ -43,9 +43,9 @@ import cj.restspecs.core.model.Header;
 import cj.restspecs.core.model.Representation;
 import cj.restspecs.core.model.Request;
 import cj.restspecs.core.model.Response;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -115,7 +115,7 @@ public class RestSpec {
     }
 
     private void blowUpIfThereAreFieldsBesidesThese(JsonNode root, List<String> allowedNodes) {
-        Iterator<String> fields = root.getFieldNames();
+        Iterator<String> fields = root.fieldNames();
         while (fields.hasNext()) {
             String field = fields.next();
             if (!allowedNodes.contains(field)) {
@@ -302,7 +302,7 @@ class HeaderImpl implements Header {
     public List<String> fieldNames() {
 
         List<String> results = new ArrayList<String>();
-        Iterator<String> names = headerNode.getFieldNames();
+        Iterator<String> names = headerNode.fieldNames();
         while (names.hasNext()) {
             results.add(names.next());
         }
@@ -311,11 +311,11 @@ class HeaderImpl implements Header {
 
     public List<String> fieldsNamed(String name) {
         List<String> results = new ArrayList<String>();
-        final Iterator<Map.Entry<String, JsonNode>> items = headerNode.getFields();
+        final Iterator<Map.Entry<String, JsonNode>> items = headerNode.fields();
         while (items.hasNext()) {
             Map.Entry<String, JsonNode> field = items.next();
             if (field.getKey().equals(name)) {
-                results.add(field.getValue().getTextValue());
+                results.add(field.getValue().asText());
             }
         }
         return results;
@@ -339,11 +339,11 @@ class RepresentationFactory {
 
                 JsonNode representation = node.path("representation");
                 if (!representation.isMissingNode()) {
-                    return IOUtils.toInputStream(representation.getValueAsText());
+                    return IOUtils.toInputStream(representation.asText());
                 }
                 JsonNode repRef = node.path("representation-ref");
                 if (!repRef.isMissingNode()) {
-                    String resourcePath = repRef.getValueAsText();
+                    String resourcePath = repRef.asText();
                     return loader.load(resourcePath);
                 }
                 throw new IllegalStateException("rest spec does not have representation or representation-ref response node");
@@ -381,7 +381,7 @@ class RequestFromRestSpec implements Request {
         if (method.isMissingNode()) {
             throw new RuntimeException("Spec is missing a 'request.method'");
         }
-        return method.getValueAsText();
+        return method.asText();
     }
 
     public Representation representation() {
@@ -405,7 +405,7 @@ class ResponseFromRestSpec implements Response {
     }
 
     public int statusCode() {
-        return responseNode.path("statusCode").getIntValue();
+        return responseNode.path("statusCode").intValue();
     }
 
     private <T> T nthOrElse(int n, T defaultValue, List<T> list) {

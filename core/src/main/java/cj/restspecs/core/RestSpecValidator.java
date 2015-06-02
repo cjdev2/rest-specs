@@ -46,11 +46,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
-
 import cj.restspecs.core.io.ClasspathLoader;
 import cj.restspecs.core.io.Loader;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class RestSpecValidator {
     public static class FileScanningResult {
@@ -224,13 +223,13 @@ public class RestSpecValidator {
     }
 
     private Path validateRepresentationReference(Path next, JsonNode refNode) {
-        File file = new File(resourcesDir.getAbsolutePath() + File.separatorChar + refNode.getTextValue());
+        File file = new File(resourcesDir.getAbsolutePath() + File.separatorChar + refNode.asText());
 
         if (!file.exists()) {
             throw new RuntimeException("Spec references nonexistent file: " + file.getAbsolutePath());
         }
 
-        return new Path(refNode.getTextValue());
+        return new Path(refNode.asText());
     }
 
     private static List<Path> flatListFiles(Path base, File path, List<Path> files) {
