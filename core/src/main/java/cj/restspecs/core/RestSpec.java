@@ -261,6 +261,35 @@ public class RestSpec {
         return urlWithReplacedValues;
     }
 
+    public String getPathReplacedWith(String firstKey, Object firstValue, Object ... moreKeysAndValues) {
+    	
+    	if (firstKey == null) {
+            throw new IllegalArgumentException("replacement keys cannot be null.");
+    	}
+
+        Map<String,Object> map = new HashMap<String,Object>();
+        map.put(firstKey,firstValue);
+        
+        if (moreKeysAndValues.length %2 != 0) {
+            throw new IllegalArgumentException("Must have an even number of arguments, you sent me " +  (moreKeysAndValues.length + 2));
+        }
+        
+        for (int i = 0; i< moreKeysAndValues.length; i += 2) {
+            Object key = moreKeysAndValues[i];
+            Object value = moreKeysAndValues[i+1];
+
+            if (!(key instanceof String)) {
+            	String className = (key == null) ? "java.lang.Object" : key.getClass().getName();
+            	String message = String.format("Key is not a String: %s (%s)", key, className);
+                throw new IllegalArgumentException(message);
+            }
+
+            map.put((String)key, value);
+            
+        }
+        return getPathReplacedWith(map);
+    }
+
     public Request request() {
         return new RequestFromRestSpec(root, loader);
     }

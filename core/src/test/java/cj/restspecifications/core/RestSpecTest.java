@@ -333,6 +333,45 @@ public class RestSpecTest {
     }
 
     @Test
+    public void giveUsersAnEvenCleanerWayOfBuildingPathReplacements() {
+        String specJson = "{ \"url\": \"/foo/{var1}/bar/{var2}/baz/{var3}\" }";
+
+        RestSpec restSpec = new RestSpec("spec", new StringLoader(specJson));
+        
+        String path = restSpec.getPathReplacedWith("{var1}", 1, "{var2}", 2, "{var3}", 3);
+
+        assertThat(path, equalTo("/foo/1/bar/2/baz/3"));
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void theEvenCleanerWayCatchesInvalidArgs() {
+        String specJson = "{ \"url\": \"/foo/{var1}/bar/{var2}/baz/{var3}\" }";
+        RestSpec restSpec =new RestSpec("spec", new StringLoader(specJson));
+        restSpec.getPathReplacedWith("{var1}", 1, "{var2}", 2, 3, 4);
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void theEvenCleanerWayCatchesNullKeys() {
+        String specJson = "{ \"url\": \"/foo/{var1}/bar/{var2}/baz/{var3}\" }";
+        RestSpec restSpec =new RestSpec("spec", new StringLoader(specJson));
+        restSpec.getPathReplacedWith("{var1}", 1, "{var2}", 2, null, 4);
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void theEvenCleanerWayCatchesNullKeysInTheFirstArg() {
+        String specJson = "{ \"url\": \"/foo/{var1}/bar/{var2}/baz/{var3}\" }";
+        RestSpec restSpec =new RestSpec("spec", new StringLoader(specJson));
+        restSpec.getPathReplacedWith(null, 1);
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void theEvenCleanerWayCatchesInvalidNumberOfArgs() {
+        String specJson = "{ \"url\": \"/foo/{var1}/bar/{var2}/baz/{var3}\" }";
+        RestSpec restSpec =new RestSpec("spec", new StringLoader(specJson));
+        restSpec.getPathReplacedWith("{var1}", 1, "{var2}", 2, 3, "{var3}");
+    }
+
+    @Test
     public void pathReplacementWorksWithQueryParametersAsWell() {
         String specJson = "{ \"url\": \"/path?leftParameter={left}&rightParameter={right}\" }";
 
