@@ -80,17 +80,14 @@ public class ConcatenateMojo extends AbstractRestSpecMojo {
     }
 
     private static void writeHeader(PrintWriter out) {
-        out.println("/*jslint newcap: false*/");
-        out.println("/*global RestSpec:true */");
-        out.println();
         out.println("/*THIS FILE HAS BEEN AUTOMATICALLY GENERATED*/");
         out.println();
-        out.println("var RestSpec = [");
+        out.println("define(function() { return [");
         out.println();
     }
 
     private static void writeFooter(PrintWriter out) {
-        out.println("];");
+        out.println("];});");
     }
 
     private static void append(File file, PrintWriter out) throws Exception {

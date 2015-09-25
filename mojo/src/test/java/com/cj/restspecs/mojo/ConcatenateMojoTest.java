@@ -121,14 +121,11 @@ public class ConcatenateMojoTest {
         // THEN
         String[] actualLines = FileUtils.readLines(destinationFile).toArray(new String[]{});
         String[] expectedHeaderLines = {
-                "/*jslint newcap: false*/",
-                "/*global RestSpec:true */",
-                "",
                 "/*THIS FILE HAS BEEN AUTOMATICALLY GENERATED*/",
                 "",
-                "var RestSpec = ["
+                "define(function() { return ["
         };
-        String expectedFooter = "];";
+        String expectedFooter = "];});";
 
         for (int i = 0; i < expectedHeaderLines.length; i++) {
             assertEquals(expectedHeaderLines[i], actualLines[i]);
@@ -144,7 +141,7 @@ public class ConcatenateMojoTest {
         assertEquals("There should be two commas between the rest specs", 2, commaCount);
 
         //check the last line
-        assertEquals("The rest spec array should end with ']'", expectedFooter, actualLines[actualLines.length-1]);
+        assertEquals("The rest spec array should end with '];}'", expectedFooter, actualLines[actualLines.length-1]);
     }
 }
 
