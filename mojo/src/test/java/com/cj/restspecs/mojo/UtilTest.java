@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.security.SecureRandom;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -17,21 +18,21 @@ public class UtilTest {
 
     private static final Random RNG = new SecureRandom();
 
-    private static final File SOURCES;
+    private static final Path SOURCE_ROOT;
 
-    private static final Set<File> SPECIFICATIONS;
+    private static final Set<Path> SPECIFICATIONS;
 
     static {
         {
             // generate a base path for sources (does not write to file system)
-            SOURCES = new File(FileUtils.getTempDirectory(), generateRandomPath());
+            SOURCE_ROOT = new File(FileUtils.getTempDirectory(), generateRandomPath()).toPath();
         }
         {
             // generate some specification paths (does not write to file system)
-            final ArrayList<File> specs = new ArrayList<>();
-            specs.add(new File(SOURCES, "com/package/one/service-twenty-one.spec.json"));
-            specs.add(new File(SOURCES, "customers.spec.json"));
-            specs.add(new File(SOURCES, "com/facebook/frienemies.spec.json"));
+            final ArrayList<Path> specs = new ArrayList<>();
+            specs.add(new File("com/package/one/service-twenty-one.spec.json").toPath());
+            specs.add(new File("customers.spec.json").toPath());
+            specs.add(new File("com/facebook/frienemies.spec.json").toPath());
             SPECIFICATIONS = Collections.unmodifiableSet(new HashSet<>(specs));
         }
     }
@@ -53,40 +54,43 @@ public class UtilTest {
     @BeforeClass
     public static void generateSources() throws IOException {
 
-        if (SOURCES.exists())
-            throw new RuntimeException("sources directory already exists");
+//        if (SOURCE_ROOT.exists())
+//            throw new RuntimeException("sources directory already exists");
+//
+//        if (!SOURCE_ROOT.mkdir())
+//            throw new RuntimeException("cannot create sources directory");
 
-        if (!SOURCES.mkdir())
-            throw new RuntimeException("cannot create sources directory");
 
-
-        for(File spec : SPECIFICATIONS) {
-            spec.getParentFile().mkdirs();
-            FileUtils.touch(spec);
+        for(Path specPath : SPECIFICATIONS) {
+            File specFile = SOURCE_ROOT.resolve(specPath).toFile();
+            specFile.getParentFile().mkdirs();
+            FileUtils.touch(specFile);
         }
 
         /*
         add some non-spec files, too.
          */
-        final File notSpec1 = new File(SOURCES, "com/package/this.here.file.json");
-        final File notSpec2 = new File(SOURCES, "not-a-spec-at-all.txt");
+//        final File notSpec1 = new File(SOURCE_ROOT, "com/package/this.here.file.json");
+//        final File notSpec2 = new File(SOURCE_ROOT, "not-a-spec-at-all.txt");
 
     }
 
     @AfterClass
     public static void removeSources() throws IOException {
-        FileUtils.deleteDirectory(SOURCES);
+        FileUtils.deleteDirectory(SOURCE_ROOT.toFile());
     }
 
 
     @Test
-    public void testFindRestSpecFiles() throws IOException {
+    public void testFindRestSpecPaths() throws IOException {
 
         // WHEN
-        final Set<File> actual = Util.findRestSpecFiles(SOURCES).collect(Collectors.toSet());
+        final Set<Path> actual = Util.findRestSpecPaths(SOURCE_ROOT).collect(Collectors.toSet());
 
         // THEN
-        final Set<File> expected = SPECIFICATIONS;
+        final Set<Path> expected = SPECIFICATIONS.stream().map(rel -> SOURCE_ROOT.resolve(rel))
+                .collect(Collectors.toSet());
+
         assertEquals(expected, actual);
 
     }

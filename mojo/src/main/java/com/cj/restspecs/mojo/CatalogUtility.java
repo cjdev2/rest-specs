@@ -15,8 +15,9 @@ public class CatalogUtility {
 
         final File destination = new File(new File(destRoot, Util.packageToPath(destPackage)),CATALOG_FILENAME);
 
-        FileUtils.touch(destination);
-
+        final List<String> specs = Util.findRestSpecFiles(sourceRoot)
+                .map(File::getAbsolutePath).collect(Collectors.toList());
+        FileUtils.writeLines(destination, specs);
 
 //        final List<File> restSpecs = getRestSpecs();
 //

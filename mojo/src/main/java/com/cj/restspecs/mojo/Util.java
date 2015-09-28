@@ -43,6 +43,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Spliterator;
@@ -147,9 +148,27 @@ public class Util {
         return packageName.replace(".","/");
     }
 
+    /**
+     *
+     * @param fromRoot
+     * @return
+     *
+     * @deprecated use #findRestSpecFiles(Path)
+     */
+    @Deprecated
     public static Stream<File> findRestSpecFiles(File fromRoot) {
         final Iterator<File> fit =  FileUtils.iterateFiles(
                 fromRoot, new WildcardFileFilter("*.spec.json"), TrueFileFilter.INSTANCE);
         return StreamSupport.stream(Spliterators.spliteratorUnknownSize(fit, Spliterator.ORDERED), false);
     }
+
+
+    public static Stream<Path> findRestSpecPaths(Path fromRoot) {
+        final Iterator<File> fit =  FileUtils.iterateFiles(
+                fromRoot.toFile(), new WildcardFileFilter("*.spec.json"), TrueFileFilter.INSTANCE);
+        return StreamSupport.stream(Spliterators.spliteratorUnknownSize(fit, Spliterator.ORDERED), false)
+                .map(File::toPath);
+    }
+
+
 }
