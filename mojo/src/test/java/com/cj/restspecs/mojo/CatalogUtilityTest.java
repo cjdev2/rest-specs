@@ -42,8 +42,6 @@ import org.junit.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.security.SecureRandom;
 import java.util.*;
@@ -55,14 +53,15 @@ public class CatalogUtilityTest {
 
     private static final Random RNG = new SecureRandom();
 
-    private static final Path SOURCE_ROOT, DESTINATION_ROOT;
+    private static final Path SOURCE_ROOT_1, SOURCE_ROOT_2, DESTINATION_ROOT;
 
     private static final Set<Path> SPECIFICATIONS;
 
     static {
         {
             // generate base paths for sources and classes (does not write to file system)
-            SOURCE_ROOT = new File(FileUtils.getTempDirectory(), "source" + generateRandomPath()).toPath();
+            SOURCE_ROOT_1 = new File(FileUtils.getTempDirectory(), "source1" + generateRandomPath()).toPath();
+            SOURCE_ROOT_2 = new File(FileUtils.getTempDirectory(), "source2" + generateRandomPath()).toPath();
             DESTINATION_ROOT = new File(FileUtils.getTempDirectory(), "dest" + generateRandomPath()).toPath();
         }
         {
@@ -71,6 +70,7 @@ public class CatalogUtilityTest {
             specs.add(new File("com/package/one/service-twenty-one.spec.json").toPath());
             specs.add(new File("customers.spec.json").toPath());
             specs.add(new File("com/facebook/frienemies.spec.json").toPath());
+            specs.add(new File("com/foo/bar/baz/some.spec.json").toPath());
             SPECIFICATIONS = Collections.unmodifiableSet(new HashSet<>(specs));
         }
     }
@@ -83,17 +83,30 @@ public class CatalogUtilityTest {
     @BeforeClass
     public static void writeSources() throws IOException {
 
-        if (SOURCE_ROOT.toFile().exists())
+        if (SOURCE_ROOT_1.toFile().exists())
             throw new RuntimeException("sources directory already exists");
 
-        if (!SOURCE_ROOT.toFile().mkdir())
+        if (!SOURCE_ROOT_1.toFile().mkdir())
+            throw new RuntimeException("cannot create sources directory");
+
+        if (SOURCE_ROOT_2.toFile().exists())
+            throw new RuntimeException("sources directory already exists");
+
+        if (!SOURCE_ROOT_2.toFile().mkdir())
             throw new RuntimeException("cannot create sources directory");
 
 
-        for(Path specPath : SPECIFICATIONS) {
+        final List<Path> specs1 = SPECIFICATIONS.stream().limit(2).collect(Collectors.toList());
+        final List<Path> specs2 = SPECIFICATIONS.stream().skip(2).collect(Collectors.toList());
 
-            File specFile = SOURCE_ROOT.resolve(specPath).toFile();
+        for(Path specPath : specs1) {
+            File specFile = SOURCE_ROOT_1.resolve(specPath).toFile();
+            specFile.getParentFile().mkdirs();
+            FileUtils.touch(specFile);
+        }
 
+        for(Path specPath : specs2) {
+            File specFile = SOURCE_ROOT_2.resolve(specPath).toFile();
             specFile.getParentFile().mkdirs();
             FileUtils.touch(specFile);
         }
@@ -101,8 +114,8 @@ public class CatalogUtilityTest {
         /*
         add some non-spec files, too.
          */
-        final Path notSpec1 = SOURCE_ROOT.resolve( "com/package/this.here.file.json");
-        final Path notSpec2 = SOURCE_ROOT.resolve( "not-a-spec-at-all.txt");
+        final Path notSpec1 = SOURCE_ROOT_1.resolve( "com/package/this.here.file.json");
+        final Path notSpec2 = SOURCE_ROOT_2.resolve( "not-a-spec-at-all.txt");
 
         for(Path p : new Path[] {notSpec1,notSpec2}) {
             File f = p.toFile();
@@ -115,7 +128,7 @@ public class CatalogUtilityTest {
 
     @AfterClass
     public static void cleanupSources() throws IOException {
-        FileUtils.deleteDirectory(SOURCE_ROOT.toFile());
+        FileUtils.deleteDirectory(SOURCE_ROOT_1.toFile());
     }
 
 
@@ -142,7 +155,7 @@ public class CatalogUtilityTest {
         String packageName = "com.foo.bar";
 
         // WHEN
-        CatalogUtility.generateCatalog(Collections.singletonList(SOURCE_ROOT), DESTINATION_ROOT, packageName);
+        CatalogUtility.generateCatalog(Arrays.asList(SOURCE_ROOT_1, SOURCE_ROOT_2), DESTINATION_ROOT, packageName);
 
         // THEN
         final Path expectedLocation = DESTINATION_ROOT.resolve("com/foo/bar/restspecs.rs");
@@ -156,7 +169,7 @@ public class CatalogUtilityTest {
         String packageName = "com.foo.bar";
 
         // WHEN
-        CatalogUtility.generateCatalog(Collections.singletonList(SOURCE_ROOT), DESTINATION_ROOT, packageName);
+        CatalogUtility.generateCatalog(Arrays.asList(SOURCE_ROOT_1, SOURCE_ROOT_2), DESTINATION_ROOT, packageName);
 
         // THEN
         final Path sourcePath = DESTINATION_ROOT.resolve( "com/foo/bar/restspecs.rs");
