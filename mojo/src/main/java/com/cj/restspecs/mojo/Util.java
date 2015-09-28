@@ -43,9 +43,18 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Spliterator;
+import java.util.Spliterators;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.IOFileFilter;
+import org.apache.commons.io.filefilter.TrueFileFilter;
+import org.apache.commons.io.filefilter.WildcardFileFilter;
 
 public class Util {
 
@@ -138,5 +147,9 @@ public class Util {
         return packageName.replace(".","/");
     }
 
-
+    public static Stream<File> findRestSpecFiles(File fromRoot) {
+        final Iterator<File> fit =  FileUtils.iterateFiles(
+                fromRoot, new WildcardFileFilter("*.spec.json"), TrueFileFilter.INSTANCE);
+        return StreamSupport.stream(Spliterators.spliteratorUnknownSize(fit, Spliterator.ORDERED), false);
+    }
 }
