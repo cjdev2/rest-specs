@@ -142,7 +142,7 @@ public class CatalogUtilityTest {
         String packageName = "com.foo.bar";
 
         // WHEN
-        CatalogUtility.generateCatalog(SOURCE_ROOT, DESTINATION_ROOT, packageName);
+        CatalogUtility.generateCatalog(Collections.singletonList(SOURCE_ROOT), DESTINATION_ROOT, packageName);
 
         // THEN
         final Path expectedLocation = DESTINATION_ROOT.resolve("com/foo/bar/restspecs.rs");
@@ -156,7 +156,7 @@ public class CatalogUtilityTest {
         String packageName = "com.foo.bar";
 
         // WHEN
-        CatalogUtility.generateCatalog(SOURCE_ROOT, DESTINATION_ROOT, packageName);
+        CatalogUtility.generateCatalog(Collections.singletonList(SOURCE_ROOT), DESTINATION_ROOT, packageName);
 
         // THEN
         final Path sourcePath = DESTINATION_ROOT.resolve( "com/foo/bar/restspecs.rs");
