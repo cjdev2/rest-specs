@@ -43,9 +43,19 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.nio.file.Path;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Spliterator;
+import java.util.Spliterators;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.IOFileFilter;
+import org.apache.commons.io.filefilter.TrueFileFilter;
+import org.apache.commons.io.filefilter.WildcardFileFilter;
 
 public class Util {
 
@@ -124,5 +134,41 @@ public class Util {
             throw new RuntimeException("Could not create directory: " + path.getAbsolutePath());
         }
     }
+
+    /**
+     * Convert a package name into a relative file system path.
+     *
+     * @param packageName name of package in dotted notation.
+     *
+     * @return file system path string.
+     *
+     * @throws NullPointerException if argument is null
+     */
+    public  static String packageToPath(String packageName) {
+        return packageName.replace(".","/");
+    }
+
+    /**
+     *
+     * @param fromRoot
+     * @return
+     *
+     * @deprecated use #findRestSpecFiles(Path)
+     */
+    @Deprecated
+    public static Stream<File> findRestSpecFiles(File fromRoot) {
+        final Iterator<File> fit =  FileUtils.iterateFiles(
+                fromRoot, new WildcardFileFilter("*.spec.json"), TrueFileFilter.INSTANCE);
+        return StreamSupport.stream(Spliterators.spliteratorUnknownSize(fit, Spliterator.ORDERED), false);
+    }
+
+
+    public static Stream<Path> findRestSpecPaths(Path fromRoot) {
+        final Iterator<File> fit =  FileUtils.iterateFiles(
+                fromRoot.toFile(), new WildcardFileFilter("*.spec.json"), TrueFileFilter.INSTANCE);
+        return StreamSupport.stream(Spliterators.spliteratorUnknownSize(fit, Spliterator.ORDERED), false)
+                .map(File::toPath);
+    }
+
 
 }
