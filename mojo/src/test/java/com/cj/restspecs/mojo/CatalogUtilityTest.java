@@ -181,6 +181,7 @@ public class CatalogUtilityTest {
         final Set<String> expected =
                 SPECIFICATIONS.stream()
                         .map(Path::toString)
+                        .map(rel -> "/" + rel)
                     .collect(Collectors.toSet());
 
         assertEquals(expected, actual);

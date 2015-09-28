@@ -60,6 +60,7 @@ public class CatalogUtility {
             Util.findRestSpecPaths(sourceRoot)
                     .map(sourceRoot::relativize)
                     .map(Path::toString)
+                    .map(rel -> "/" + rel)
                     .forEach(accum::add);
         }
         FileUtils.writeLines(catalogLocation.toFile(), accum);
