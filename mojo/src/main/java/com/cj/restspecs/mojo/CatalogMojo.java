@@ -50,7 +50,7 @@ import java.util.stream.Collectors;
 
 /**
  * @goal catalog
- * @phase package
+ * @phase compile
  */
 public class CatalogMojo extends AbstractRestSpecMojo  {
 
