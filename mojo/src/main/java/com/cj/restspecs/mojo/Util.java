@@ -125,4 +125,18 @@ public class Util {
         }
     }
 
+    /**
+     * Convert a package name into a relative file system path.
+     *
+     * @param packageName name of package in dotted notation.
+     *
+     * @return file system path string.
+     *
+     * @throws NullPointerException if argument is null
+     */
+    public  static String packageToPath(String packageName) {
+        return packageName.replace(".","/");
+    }
+
+
 }
