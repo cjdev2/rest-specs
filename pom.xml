@@ -32,14 +32,10 @@
                 <configuration>
                     <header>header.txt</header>
                     <strictCheck>true</strictCheck>
-                    <excludes>
-                        <exclude>**/*.js</exclude>
-                        <exclude>**/*.json</exclude>
-                        <exclude>**/*.css</exclude>
-                        <exclude>**/*.who</exclude>
-                        <exclude>**/*.html</exclude>
-                        <exclude>.idea/**</exclude>
-                    </excludes>
+                    <includes>
+                        <include>**/*.java</include>
+                        <include>**/*.scala</include>
+                    </includes>
                 </configuration>
                 <executions>
                     <execution>
