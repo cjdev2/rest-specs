@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2011, 2012, 2013 Commission Junction Inc.
+ * Copyright (C) Commission Junction Inc.
  *
  * This file is part of rest-specs.
  *
