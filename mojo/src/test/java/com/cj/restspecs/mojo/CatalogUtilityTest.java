@@ -67,10 +67,16 @@ public class CatalogUtilityTest {
         {
             // generate some specification paths (does not write to file system)
             final ArrayList<Path> specs = new ArrayList<>();
+            specs.add(new File("com/foo/bar/baz/whoosh.spec.json").toPath());
             specs.add(new File("com/package/one/service-twenty-one.spec.json").toPath());
             specs.add(new File("customers.spec.json").toPath());
             specs.add(new File("com/facebook/frienemies.spec.json").toPath());
-            specs.add(new File("com/foo/bar/baz/some.spec.json").toPath());
+            specs.add(new File("com/foobar/baz/excellent.spec.json").toPath());
+            specs.add(new File("com/foobar/baz/bob/terrible.spec.json").toPath());
+            specs.add(new File("com/foo/baz/welcome.spec.json").toPath());
+            specs.add(new File("com/bar/notreally.spec.json").toPath());
+            specs.add(new File("com/foo/thisthing.spec.json").toPath());
+            specs.add(new File("com/foo/bar/baz/whoosh.spec.json").toPath());
             SPECIFICATIONS = Collections.unmodifiableSet(new HashSet<>(specs));
         }
     }
@@ -153,13 +159,13 @@ public class CatalogUtilityTest {
     public void testGenerateCatalogCreatesFile() throws IOException {
 
         // GIVEN
-        String packageName = "com.foo.bar";
+        String packageName = "com.foo";
 
         // WHEN
         CatalogUtility.generateCatalog(Arrays.asList(SOURCE_ROOT_1, SOURCE_ROOT_2), DESTINATION_ROOT, packageName);
 
         // THEN
-        final Path expectedLocation = DESTINATION_ROOT.resolve("com/foo/bar/restspecs.rs");
+        final Path expectedLocation = DESTINATION_ROOT.resolve("com/foo/restspecs.rs");
         assertTrue("file should have been created", expectedLocation.toFile().exists());
     }
 
@@ -167,13 +173,13 @@ public class CatalogUtilityTest {
     public void testGenerateCatalogContents() throws IOException {
 
         // GIVEN
-        String packageName = "com.foo.bar";
+        String packageName = "com.foo";
 
         // WHEN
         CatalogUtility.generateCatalog(Arrays.asList(SOURCE_ROOT_1, SOURCE_ROOT_2), DESTINATION_ROOT, packageName);
 
         // THEN
-        final Path sourcePath = DESTINATION_ROOT.resolve( "com/foo/bar/restspecs.rs");
+        final Path sourcePath = DESTINATION_ROOT.resolve( "com/foo/restspecs.rs");
         final List<String> actualLines = FileUtils.readLines(sourcePath.toFile());
 
 
@@ -183,6 +189,7 @@ public class CatalogUtilityTest {
                 SPECIFICATIONS.stream()
                         .map(Path::toString)
                         .map(rel -> "/" + rel)
+                        .filter(r -> r.startsWith("/com/foo/"))
                     .collect(Collectors.toSet());
 
         assertEquals(expected, actual);

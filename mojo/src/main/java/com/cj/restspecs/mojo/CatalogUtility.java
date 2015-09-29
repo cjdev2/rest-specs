@@ -57,7 +57,8 @@ public class CatalogUtility {
 
         final ArrayList<String> accum = new ArrayList<>();
         for(Path sourceRoot : sourceRoots) {
-            Util.findRestSpecPaths(sourceRoot)
+            final Path from = sourceRoot.resolve(Util.packageToPath(packageName));
+            Util.findRestSpecPaths(from)
                     .map(sourceRoot::relativize)
                     .map(Path::toString)
                     .map(rel -> "/" + rel)
