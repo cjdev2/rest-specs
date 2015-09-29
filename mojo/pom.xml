@@ -78,29 +78,4 @@
 			</plugin>
 		</plugins>
 	</build>
-	<developers>
-		<developer>
-			<name>Mark Williams</name>
-			<email>mwilliams@cj.com</email>
-			<organization>CJ Affiliate by Conversant</organization>
-			<organizationUrl>http://www.cj.com</organizationUrl>
-		</developer>
-		<developer>
-			<name>Greg Wiley</name>
-			<email>aztec.rex@jammm.com</email>
-			<organization>CJ Affiliate by Conversant</organization>
-			<organizationUrl>http://www.cj.com</organizationUrl>
-		</developer>
-	</developers>
-	<scm>
-		<connection>https://github.com/cjdev/rest-specs.git</connection>
-		<developerConnection>git@github.com:cjdev/rest-specs.git</developerConnection>
-		<url>https://github.com/cjdev/rest-specs.git</url>
-	</scm>
-	<distributionManagement>
-		<snapshotRepository>
-			<id>ossrh</id>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-		</snapshotRepository>
-	</distributionManagement>
 </project>
