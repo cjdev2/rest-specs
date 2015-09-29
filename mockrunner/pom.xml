@@ -1,43 +1,42 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>com.cj.restspecs</groupId>
-        <artifactId>rest-specs-pom</artifactId>
-        <version>10-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
-    </parent>
-
-    <artifactId>rest-specs-mockrunner</artifactId>
-
-    <name>RESTSPECS :: Mock Runner</name>
-    <url>https://github.com/cjdev/rest-specs.git</url>
-    <description>A test-friendly mechanism for expressing RESTful http contracts. Mock runner integration.</description>
-
-    <licenses>
-        <license>
-            <name>GNU General Public License (GPL)</name>
-            <url>http://www.gnu.org/licenses/gpl.txt</url>
-        </license>
-    </licenses>
-
-    <dependencies>
-        <dependency>
-            <groupId>com.mockrunner</groupId>
-            <artifactId>mockrunner-servlet</artifactId>
-            <version>1.0.0</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.cj.restspecs</groupId>
-            <artifactId>rest-specs-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>3.0.1</version>
-            <scope>provided</scope>
-        </dependency>
-    </dependencies>
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.cj.restspecs</groupId>
+    <artifactId>restspecs-depman</artifactId>
+    <version>10-SNAPSHOT</version>
+    <relativePath>../depman/pom.xml</relativePath>
+  </parent>
+  <artifactId>rest-specs-mockrunner</artifactId>
+  <name>RESTSPECS :: Mock Runner</name>
+  <url>https://github.com/cjdev/rest-specs.git</url>
+  <description>A test-friendly mechanism for expressing RESTful http contracts. Mock runner integration.</description>
+  <licenses>
+    <license>
+      <name>GNU General Public License (GPL)</name>
+      <url>http://www.gnu.org/licenses/gpl.txt</url>
+    </license>
+  </licenses>
+  <prerequisites>
+    <maven>3.3</maven>
+  </prerequisites>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+  <dependencies>
+    <dependency>
+      <groupId>com.mockrunner</groupId>
+      <artifactId>mockrunner-servlet</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.cj.restspecs</groupId>
+      <artifactId>rest-specs-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
 </project>
