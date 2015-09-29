@@ -143,8 +143,8 @@
   </scm>
   <distributionManagement>
     <snapshotRepository>
-      <id>ossrh</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+      <id>${snap-repo-id}</id>
+      <url>${snap-repo-url}</url>
     </snapshotRepository>
   </distributionManagement>
 </project>
