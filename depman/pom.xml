@@ -19,7 +19,9 @@
     </prerequisites>
 
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
 
     <dependencies>
         <!-- these dependencies are automatically available in every module -->
