@@ -34,18 +34,15 @@
         <dependency>
             <groupId>com.mockrunner</groupId>
             <artifactId>mockrunner-servlet</artifactId>
-            <version>1.0.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.cj.restspecs</groupId>
             <artifactId>rest-specs-core</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
-            <version>3.0.1</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
