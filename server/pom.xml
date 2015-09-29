@@ -4,16 +4,17 @@
     <parent>
         <groupId>com.cj.restspecs</groupId>
         <artifactId>rest-specs-pom</artifactId>
-        <version>9-SNAPSHOT</version>
+        <version>10-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>rest-specs-server</artifactId>
 
-    <name>${project.artifactId}</name>
+    <name>RESTSPECS :: Spec Server</name>
     <url>https://github.com/cjdev/rest-specs.git</url>
-    <description>A test-friendly mechanism for expressing RESTful http contracts</description>
+    <description>A test-friendly mechanism for expressing RESTful http contracts. Specification server.</description>
 
     <licenses>
         <license>

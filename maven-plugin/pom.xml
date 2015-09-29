@@ -6,16 +6,16 @@
 	<parent>
 		<groupId>com.cj.restspecs</groupId>
 		<artifactId>rest-specs-pom</artifactId>
-		<version>9-SNAPSHOT</version>
+		<version>10-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
 	</parent>
 
-	<groupId>com.cj.restspecs.mojo</groupId>
-	<artifactId>rest-specs-mojo</artifactId>
+	<artifactId>restspecs-maven-plugin</artifactId>
 	<packaging>maven-plugin</packaging>
 
-	<name>${pom.artifactId}</name>
+	<name>RESTSPECS :: Maven Plugin</name>
 	<url>https://github.com/cjdev/rest-specs.git</url>
-    <description>A test-friendly mechanism for expressing RESTful http contracts</description>
+    <description>A test-friendly mechanism for expressing RESTful http contracts. Maven support plugin.</description>
 
 	<licenses>
 		<license>

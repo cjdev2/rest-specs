@@ -4,14 +4,15 @@
     <parent>
         <groupId>com.cj.restspecs</groupId>
         <artifactId>rest-specs-pom</artifactId>
-        <version>9-SNAPSHOT</version>
+        <version>10-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>rest-specs-mockrunner</artifactId>
 
-    <name>${project.artifactId}</name>
+    <name>RESTSPECS :: Mock Runner</name>
     <url>https://github.com/cjdev/rest-specs.git</url>
-    <description>A test-friendly mechanism for expressing RESTful http contracts</description>
+    <description>A test-friendly mechanism for expressing RESTful http contracts. Mock runner integration.</description>
 
     <licenses>
         <license>
