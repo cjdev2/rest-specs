@@ -6,7 +6,7 @@
     <packaging>pom</packaging>
 
     <name>${project.artifactId}</name>
-
+    <url>https://github.com/cjdev/rest-specs.git</url>
     <modules>
         <module>core</module>
         <module>mockrunner</module>
