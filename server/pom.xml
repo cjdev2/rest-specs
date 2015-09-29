@@ -23,6 +23,10 @@
         </license>
     </licenses>
 
+    <prerequisites>
+        <maven>3.3</maven>
+    </prerequisites>
+
     <properties>
         <httpobjects-version>0.3.0</httpobjects-version>
         <jackson-version>2.3.0</jackson-version>

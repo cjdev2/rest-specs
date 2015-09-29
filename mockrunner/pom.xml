@@ -22,6 +22,10 @@
         </license>
     </licenses>
 
+    <prerequisites>
+        <maven>3.3</maven>
+    </prerequisites>
+
     <dependencies>
         <dependency>
             <groupId>com.mockrunner</groupId>

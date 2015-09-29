@@ -15,6 +15,10 @@
   <url>https://github.com/cjdev/rest-specs</url>
   <description>A test-friendly mechanism for expressing RESTful http contracts. Bill of materials.</description>
 
+  <prerequisites>
+    <maven>3.3</maven>
+  </prerequisites>
+
   <dependencyManagement>
     <dependencies>
       <dependency>
