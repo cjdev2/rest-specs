@@ -1,88 +1,79 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-
-    <parent>
-        <groupId>com.cj.restspecs</groupId>
-        <artifactId>restspecs-depman</artifactId>
-        <version>10-SNAPSHOT</version>
-        <relativePath>../depman/pom.xml</relativePath>
-    </parent>
-
-    <artifactId>rest-specs-core</artifactId>
-
-    <name>RESTSPECS :: Core</name>
-    <url>https://github.com/cjdev/rest-specs.git</url>
-    <description>A test-friendly mechanism for expressing RESTful http contracts. Core software module.</description>
-
-    <licenses>
-        <license>
-            <name>GNU General Public License (GPL)</name>
-            <url>http://www.gnu.org/licenses/gpl.txt</url>
-        </license>
-    </licenses>
-
-    <prerequisites>
-        <maven>3.3</maven>
-    </prerequisites>
-
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-
-    <build>
-        <resources>
-            <resource>
-                <directory>src/main/javascript</directory>
-            </resource>
-        </resources>
-        <testResources>
-            <testResource>
-                <directory>src/test/resources</directory>
-            </testResource>
-            <testResource>
-                <directory>src/test/html</directory>
-            </testResource>
-            <testResource>
-                <directory>src/test/javascript</directory>
-            </testResource>
-            <testResource>
-                <directory>src/test/qunit</directory>
-            </testResource>
-        </testResources>
-
-        <plugins>
-            <plugin>
-                <groupId>com.cj.qunit.mojo</groupId>
-                <artifactId>qunit-maven-plugin</artifactId>
-                <version>2.0.8</version>
-                <executions>
-                    <execution>
-                        <phase>test</phase>
-                        <goals>
-                            <goal>test</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <runner>HTMLUNIT</runner>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-
-    <dependencies>
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
-        </dependency>
-    </dependencies>
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.cj.restspecs</groupId>
+    <artifactId>restspecs-depman</artifactId>
+    <version>10-SNAPSHOT</version>
+    <relativePath>../depman/pom.xml</relativePath>
+  </parent>
+  <artifactId>rest-specs-core</artifactId>
+  <name>RESTSPECS :: Core</name>
+  <url>https://github.com/cjdev/rest-specs.git</url>
+  <description>A test-friendly mechanism for expressing RESTful http contracts. Core software module.</description>
+  <licenses>
+    <license>
+      <name>GNU General Public License (GPL)</name>
+      <url>http://www.gnu.org/licenses/gpl.txt</url>
+    </license>
+  </licenses>
+  <prerequisites>
+    <maven>3.3</maven>
+  </prerequisites>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+  <build>
+    <resources>
+      <resource>
+        <directory>src/main/javascript</directory>
+      </resource>
+    </resources>
+    <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+      </testResource>
+      <testResource>
+        <directory>src/test/html</directory>
+      </testResource>
+      <testResource>
+        <directory>src/test/javascript</directory>
+      </testResource>
+      <testResource>
+        <directory>src/test/qunit</directory>
+      </testResource>
+    </testResources>
+    <plugins>
+      <plugin>
+        <groupId>com.cj.qunit.mojo</groupId>
+        <artifactId>qunit-maven-plugin</artifactId>
+        <version>2.0.8</version>
+        <executions>
+          <execution>
+            <phase>test</phase>
+            <goals>
+              <goal>test</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <runner>HTMLUNIT</runner>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  <dependencies>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+    </dependency>
+  </dependencies>
 </project>

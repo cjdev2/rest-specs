@@ -8,21 +8,16 @@
     <relativePath>../pom.xml</relativePath>
   </parent>
   <artifactId>restspecs-bom</artifactId>
-
   <packaging>pom</packaging>
-
   <name>RESTSPECS :: Bill of Materials</name>
   <url>https://github.com/cjdev/rest-specs</url>
   <description>A test-friendly mechanism for expressing RESTful http contracts. Bill of materials.</description>
-
   <prerequisites>
     <maven>3.3</maven>
   </prerequisites>
-
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
-
   <dependencyManagement>
     <dependencies>
       <dependency>
