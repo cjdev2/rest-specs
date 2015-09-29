@@ -96,8 +96,9 @@ public class CatalogUtilityTest {
             throw new RuntimeException("cannot create sources directory");
 
 
-        final List<Path> specs1 = SPECIFICATIONS.stream().limit(2).collect(Collectors.toList());
-        final List<Path> specs2 = SPECIFICATIONS.stream().skip(2).collect(Collectors.toList());
+        final int pivot = SPECIFICATIONS.size() / 2;
+        final List<Path> specs1 = SPECIFICATIONS.stream().limit(pivot).collect(Collectors.toList());
+        final List<Path> specs2 = SPECIFICATIONS.stream().skip(pivot).collect(Collectors.toList());
 
         for(Path specPath : specs1) {
             File specFile = SOURCE_ROOT_1.resolve(specPath).toFile();
