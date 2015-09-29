@@ -3,9 +3,9 @@
 
     <parent>
         <groupId>com.cj.restspecs</groupId>
-        <artifactId>rest-specs-pom</artifactId>
+        <artifactId>restspecs-bom</artifactId>
         <version>10-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
+        <relativePath>../bom/pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>

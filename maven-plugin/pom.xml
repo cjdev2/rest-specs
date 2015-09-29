@@ -5,9 +5,9 @@
 
 	<parent>
 		<groupId>com.cj.restspecs</groupId>
-		<artifactId>rest-specs-pom</artifactId>
+		<artifactId>restspecs-bom</artifactId>
 		<version>10-SNAPSHOT</version>
-		<relativePath>../pom.xml</relativePath>
+		<relativePath>../bom/pom.xml</relativePath>
 	</parent>
 
 	<artifactId>restspecs-maven-plugin</artifactId>
