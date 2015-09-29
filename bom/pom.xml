@@ -8,8 +8,13 @@
     <relativePath>../pom.xml</relativePath>
   </parent>
   <artifactId>restspecs-bom</artifactId>
+
   <packaging>pom</packaging>
+
   <name>RESTSPECS :: Bill of Materials</name>
+  <url>https://github.com/cjdev/rest-specs</url>
+  <description>A test-friendly mechanism for expressing RESTful http contracts. Bill of materials.</description>
+
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -25,11 +30,6 @@
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>restspecs-http-objects</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>restspecs-maven-plugin</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

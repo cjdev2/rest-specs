@@ -3,9 +3,9 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.cj.restspecs</groupId>
-        <artifactId>restspecs-bom</artifactId>
+        <artifactId>restspecs-depman</artifactId>
         <version>10-SNAPSHOT</version>
-        <relativePath>../bom/pom.xml</relativePath>
+        <relativePath>../depman/pom.xml</relativePath>
     </parent>
 
     <artifactId>restspecs-http-objects</artifactId>
