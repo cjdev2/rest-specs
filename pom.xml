@@ -19,7 +19,7 @@
         <module>core</module>
         <module>mockrunner</module>
         <module>http-objects</module>
-        <module>mojo</module>
+        <module>maven-plugin</module>
         <module>server</module>
         <module>html-renderer</module>
     </modules>
