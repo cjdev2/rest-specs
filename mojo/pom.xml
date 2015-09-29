@@ -63,44 +63,6 @@
 					<goalPrefix>restspecs</goalPrefix>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-source-plugin</artifactId>
-				<version>2.2.1</version>
-				<executions>
-					<execution>
-						<id>attach-sources</id>
-						<goals>
-							<goal>jar-no-fork</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
 		</plugins>
 	</build>
-	<developers>
-		<developer>
-			<name>Mark Williams</name>
-			<email>mwilliams@cj.com</email>
-			<organization>CJ Affiliate by Conversant</organization>
-			<organizationUrl>http://www.cj.com</organizationUrl>
-		</developer>
-		<developer>
-			<name>Greg Wiley</name>
-			<email>aztec.rex@jammm.com</email>
-			<organization>CJ Affiliate by Conversant</organization>
-			<organizationUrl>http://www.cj.com</organizationUrl>
-		</developer>
-	</developers>
-	<scm>
-		<connection>https://github.com/cjdev/rest-specs.git</connection>
-		<developerConnection>git@github.com:cjdev/rest-specs.git</developerConnection>
-		<url>https://github.com/cjdev/rest-specs.git</url>
-	</scm>
-	<distributionManagement>
-		<snapshotRepository>
-			<id>ossrh</id>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-		</snapshotRepository>
-	</distributionManagement>
 </project>
