@@ -7,3 +7,5 @@ target
 *.iml
 .idea
 .cache-main
+*.versionsBackup
+
