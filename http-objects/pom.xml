@@ -11,6 +11,7 @@
 
     <name>${project.artifactId}</name>
     <url>https://github.com/cjdev/rest-specs.git</url>
+    <description>A test-friendly mechanism for expressing RESTful http contracts</description>
 
     <licenses>
         <license>
