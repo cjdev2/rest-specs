@@ -5,7 +5,7 @@
     <version>10-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>${project.artifactId}</name>
+    <name>RESTSPECS :: Modules Parent</name>
     <url>https://github.com/cjdev/rest-specs.git</url>
     <description>A test-friendly mechanism for expressing RESTful http contracts</description>
     <licenses>
