@@ -9,8 +9,7 @@
 		<version>10-SNAPSHOT</version>
 	</parent>
 
-	<groupId>com.cj.restspecs.mojo</groupId>
-	<artifactId>rest-specs-mojo</artifactId>
+	<artifactId>restspecs-maven-plugin</artifactId>
 	<packaging>maven-plugin</packaging>
 
 	<name>${pom.artifactId}</name>
