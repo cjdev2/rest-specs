@@ -7,6 +7,7 @@
 		<groupId>com.cj.restspecs</groupId>
 		<artifactId>rest-specs-pom</artifactId>
 		<version>10-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
 	</parent>
 
 	<artifactId>restspecs-maven-plugin</artifactId>
