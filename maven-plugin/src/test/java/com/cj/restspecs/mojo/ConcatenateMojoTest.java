@@ -117,15 +117,22 @@ public class ConcatenateMojoTest {
 
         // WHEN
         mojo.execute();
-        
+
         // THEN
         String[] actualLines = FileUtils.readLines(destinationFile).toArray(new String[]{});
         String[] expectedHeaderLines = {
                 "/*THIS FILE HAS BEEN AUTOMATICALLY GENERATED*/",
                 "",
-                "define(function() { return ["
+                "(function(){",
+                "var defineShim = (typeof define !== 'undefined') ? define : function(func){window.RestSpec = func();};",
+                "",
+                "   defineShim(function() { return ["
         };
-        String expectedFooter = "];});";
+
+        String[] expectedFooterLines = {
+                "   ];});",
+                "})();"
+        };
 
         for (int i = 0; i < expectedHeaderLines.length; i++) {
             assertEquals(expectedHeaderLines[i], actualLines[i]);
@@ -140,8 +147,11 @@ public class ConcatenateMojoTest {
         }
         assertEquals("There should be two commas between the rest specs", 2, commaCount);
 
-        //check the last line
-        assertEquals("The rest spec array should end with '];}'", expectedFooter, actualLines[actualLines.length-1]);
+        for (int i = 0; i < expectedFooterLines.length; i++) {
+            String expected = expectedFooterLines[i];
+            String actual = actualLines[actualLines.length - expectedFooterLines.length + i];
+            assertEquals(expected, actual);
+        }
     }
 }
 

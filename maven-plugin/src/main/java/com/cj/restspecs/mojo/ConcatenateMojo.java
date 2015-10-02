@@ -82,12 +82,16 @@ public class ConcatenateMojo extends AbstractRestSpecMojo {
     private static void writeHeader(PrintWriter out) {
         out.println("/*THIS FILE HAS BEEN AUTOMATICALLY GENERATED*/");
         out.println();
-        out.println("define(function() { return [");
+        out.println("(function(){");
+        out.println("var defineShim = (typeof define !== 'undefined') ? define : function(func){window.RestSpec = func();};");
+        out.println();
+        out.println("   defineShim(function() { return [");
         out.println();
     }
 
     private static void writeFooter(PrintWriter out) {
-        out.println("];});");
+        out.println("   ];});");
+        out.println("})();");
     }
 
     private static void append(File file, PrintWriter out) throws Exception {
