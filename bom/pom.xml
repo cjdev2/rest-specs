@@ -13,7 +13,7 @@
   <url>https://github.com/cjdev/rest-specs</url>
   <description>A test-friendly mechanism for expressing RESTful http contracts. Bill of materials.</description>
   <prerequisites>
-    <maven>3.3</maven>
+    <maven>3.0</maven>
   </prerequisites>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

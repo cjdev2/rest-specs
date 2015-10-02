@@ -21,7 +21,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
   <prerequisites>
-    <maven>3.3</maven>
+    <maven>3.0</maven>
   </prerequisites>
   <build>
     <sourceDirectory>src/main/scala</sourceDirectory>

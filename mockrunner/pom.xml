@@ -18,7 +18,7 @@
     </license>
   </licenses>
   <prerequisites>
-    <maven>3.3</maven>
+    <maven>3.0</maven>
   </prerequisites>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
