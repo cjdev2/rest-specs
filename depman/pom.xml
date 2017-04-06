@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.cj.restspecs</groupId>
     <artifactId>restspecs-bom</artifactId>
-    <version>10-SNAPSHOT</version>
+    <version>10.0.2-SNAPSHOT</version>
     <relativePath>../bom/pom.xml</relativePath>
   </parent>
   <artifactId>restspecs-depman</artifactId>
@@ -17,7 +17,7 @@
   </prerequisites>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <httpobjects-version>0.3.0</httpobjects-version>
+    <httpobjects-version>0.13.0</httpobjects-version>
     <jackson-version>2.5.3</jackson-version>
   </properties>
   <dependencies>
@@ -68,7 +68,7 @@
       <dependency>
         <groupId>org.httpobjects.jetty</groupId>
         <artifactId>httpobjects-jetty</artifactId>
-        <version>${httpobjects-version}</version>
+        <version>0.3.0</version>
       </dependency>
       <dependency>
         <groupId>org.httpobjects.jackson</groupId>
@@ -123,12 +123,12 @@
       <dependency>
         <groupId>org.httpobjects</groupId>
         <artifactId>httpobjects</artifactId>
-        <version>0.10.0-SNAPSHOT</version>
+        <version>0.13.0</version>
       </dependency>
       <dependency>
         <groupId>org.httpobjects.servlet</groupId>
         <artifactId>httpobjects-servlet</artifactId>
-        <version>0.10.0-SNAPSHOT</version>
+        <version>0.13.0</version>
       </dependency>
       <dependency>
         <groupId>javax.servlet</groupId>
