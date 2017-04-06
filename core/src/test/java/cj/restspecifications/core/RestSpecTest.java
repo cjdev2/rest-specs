@@ -386,6 +386,30 @@ public class RestSpecTest {
         assertThat(restSpecWithLeftReplacement.replacedPath(), equalTo("/path?leftParameter=lefty&rightParameter={right}"));
         assertThat(restSpecWithRightReplacement.replacedPath(), equalTo("/path?leftParameter=lefty&rightParameter=righty"));
     }
+    
+    @Test
+    public void pathSegmentParsingWorks() {
+        String specJson = "{ \"url\": \"/path/with/segments?extraStuffIShouldNeverSee\"}";
+
+        RestSpec restSpecWithoutReplacements = new RestSpec("testSpec", new StringLoader(specJson));
+
+        assertThat(restSpecWithoutReplacements.getPathSegment(0), equalTo("path"));
+        assertThat(restSpecWithoutReplacements.getPathSegment(1), equalTo("with"));
+        assertThat(restSpecWithoutReplacements.getPathSegment(2), equalTo("segments"));
+    }
+
+    @Test
+    public void pathSegmentParsingWorksWithHashes() {
+        String specJson = "{ \"url\": \"/path/with/segments#extraStuffIShouldNeverSee\"}";
+
+        RestSpec restSpecWithoutReplacements = new RestSpec("testSpec", new StringLoader(specJson));
+
+        assertThat(restSpecWithoutReplacements.getPathSegment(0), equalTo("path"));
+        assertThat(restSpecWithoutReplacements.getPathSegment(1), equalTo("with"));
+        assertThat(restSpecWithoutReplacements.getPathSegment(2), equalTo("segments"));
+        //assertThat(restSpecWithoutReplacements.replacedPath(), equalTo("/path?leftParameter=lefty&rightParameter=righty"));
+    }
+
 
     @Test
     public void cannotCreateARestSpecWithoutAURL() throws Exception {
