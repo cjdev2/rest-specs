@@ -151,7 +151,7 @@ public class RestSpec {
     }
 
     public List<String> getPathSegments() {
-        List<String> segments = Arrays.asList(path().split("[/?#]"));
+        List<String> segments = Arrays.asList(path().split("[/?#.]"));
         return segments.subList(1, segments.size());
     }
 
