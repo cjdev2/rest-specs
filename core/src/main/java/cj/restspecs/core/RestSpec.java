@@ -150,6 +150,11 @@ public class RestSpec {
         };
     }
 
+    public List<String> getPathSegments() {
+        List<String> segments = Arrays.asList(path().split("[/?#]"));
+        return segments.subList(1, segments.size());
+    }
+
     public class QueryParameters {
         private final List<String> namesInOrder;
         private final Map<String, List<String>> memoizedQueryParameters;
@@ -319,11 +324,6 @@ public class RestSpec {
     public String replacedPath() {
         return getPathReplacedWith(replacements);
     }
-
-	public String getPathSegment(Integer position) {
-		return path().split("[/?#]")[position+1];
-		//return path();
-	}
 }
 
 class HeaderImpl implements Header {

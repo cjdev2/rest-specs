@@ -393,9 +393,9 @@ public class RestSpecTest {
 
         RestSpec restSpecWithoutReplacements = new RestSpec("testSpec", new StringLoader(specJson));
 
-        assertThat(restSpecWithoutReplacements.getPathSegment(0), equalTo("path"));
-        assertThat(restSpecWithoutReplacements.getPathSegment(1), equalTo("with"));
-        assertThat(restSpecWithoutReplacements.getPathSegment(2), equalTo("segments"));
+        assertThat(restSpecWithoutReplacements.getPathSegments().get(0), equalTo("path"));
+        assertThat(restSpecWithoutReplacements.getPathSegments().get(1), equalTo("with"));
+        assertThat(restSpecWithoutReplacements.getPathSegments().get(2), equalTo("segments"));
     }
 
     @Test
@@ -404,9 +404,9 @@ public class RestSpecTest {
 
         RestSpec restSpecWithoutReplacements = new RestSpec("testSpec", new StringLoader(specJson));
 
-        assertThat(restSpecWithoutReplacements.getPathSegment(0), equalTo("path"));
-        assertThat(restSpecWithoutReplacements.getPathSegment(1), equalTo("with"));
-        assertThat(restSpecWithoutReplacements.getPathSegment(2), equalTo("segments"));
+        assertThat(restSpecWithoutReplacements.getPathSegments().get(0), equalTo("path"));
+        assertThat(restSpecWithoutReplacements.getPathSegments().get(1), equalTo("with"));
+        assertThat(restSpecWithoutReplacements.getPathSegments().get(2), equalTo("segments"));
         //assertThat(restSpecWithoutReplacements.replacedPath(), equalTo("/path?leftParameter=lefty&rightParameter=righty"));
     }
 
