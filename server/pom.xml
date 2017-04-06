@@ -3,7 +3,7 @@
   <parent>
     <groupId>com.cj.restspecs</groupId>
     <artifactId>restspecs-depman</artifactId>
-    <version>10-SNAPSHOT</version>
+    <version>10.0.2-SNAPSHOT</version>
     <relativePath>../depman/pom.xml</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
@@ -22,7 +22,7 @@
   </prerequisites>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <httpobjects-version>0.3.0</httpobjects-version>
+    <httpobjects-version>0.13.0</httpobjects-version>
     <jackson-version>2.3.0</jackson-version>
   </properties>
   <build>
@@ -30,16 +30,17 @@
     <testSourceDirectory>${basedir}/src/test/scala</testSourceDirectory>
     <plugins>
       <plugin>
-        <groupId>org.scala-tools</groupId>
-        <artifactId>maven-scala-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>compile</goal>
-              <goal>testCompile</goal>
-            </goals>
-          </execution>
-        </executions>
+          <groupId>net.alchim31.maven</groupId>
+          <artifactId>scala-maven-plugin</artifactId>
+          <version>3.2.1</version>
+          <executions>
+              <execution>
+                  <goals>
+                      <goal>compile</goal>
+                      <goal>testCompile</goal>
+                  </goals>
+              </execution>
+          </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -100,7 +101,7 @@
     <dependency>
       <groupId>org.httpobjects.jetty</groupId>
       <artifactId>httpobjects-jetty</artifactId>
-      <version>${httpobjects-version}</version>
+      <version>0.3.0</version>
     </dependency>
     <dependency>
       <groupId>org.httpobjects.jackson</groupId>
