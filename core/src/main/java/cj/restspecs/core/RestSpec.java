@@ -101,6 +101,7 @@ public class RestSpec {
 
         blowUpIfThereAreFieldsBesidesThese(root, Arrays.asList(
                 "name",
+                "domain",
                 "url",
                 "request",
                 "response"

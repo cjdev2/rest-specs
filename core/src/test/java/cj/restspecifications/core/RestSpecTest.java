@@ -51,6 +51,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 
 import cj.restspecs.core.io.StringLoader;
+import org.junit.Assert;
 import org.junit.Test;
 
 import cj.restspecs.core.RestSpec;
@@ -58,6 +59,35 @@ import cj.restspecs.core.io.Loader;
 import cj.restspecs.core.model.Header;
 
 public class RestSpecTest {
+
+
+    @Test
+    public void allowDomainField() {
+        // given
+        final String specJson =
+                "{\n" +
+                        "    \"name\":\"some spec\",\n" +
+                        "    \"domain\":\"Relationships\",\n" +
+                        "    \"url\":\"/some/path\",\n" +
+                        "    \"request\": {\n" +
+                        "        \"method\": \"GET\"\n" +
+                        "    },\n" +
+                        "    \"response\":{\n" +
+                        "        \"statusCode\": 404\n" +
+                        "    }\n" +
+                        "}";
+        Loader dummyLoader = new Loader() {
+            public InputStream load(String name) {
+                return new ByteArrayInputStream(specJson.getBytes());
+            }
+        };
+
+        // when
+        RestSpec spec = new RestSpec("a.spec.json", dummyLoader);
+
+        // then
+        assertTrue("Did not throw exception on domain field", true);
+    }
 
     @Test
     public void contentTypeHeaderIsAccesibleViaAConvenienceMethondOnTheResponse() {
