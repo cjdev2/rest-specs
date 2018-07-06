@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.cj.restspecs</groupId>
     <artifactId>restspecs-bom</artifactId>
-    <version>10.0.4</version>
+    <version>10.0.5</version>
     <relativePath>../bom/pom.xml</relativePath>
   </parent>
   <artifactId>restspecs-depman</artifactId>

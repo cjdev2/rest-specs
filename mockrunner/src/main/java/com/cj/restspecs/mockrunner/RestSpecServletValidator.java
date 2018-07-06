@@ -128,6 +128,8 @@ public class RestSpecServletValidator {
         Representation requestRepresentation = restSpec.request().representation();
         if (requestRepresentation != null) {
             request.setBodyContent(requestRepresentation.asText());
+        } else {
+            request.setBodyContent("");
         }
 
         request.setRequestURI(restSpec.pathMinusQueryStringAndFragment());
