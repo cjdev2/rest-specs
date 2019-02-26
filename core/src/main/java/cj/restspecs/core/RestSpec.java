@@ -102,6 +102,7 @@ public class RestSpec {
         blowUpIfThereAreFieldsBesidesThese(root, Arrays.asList(
                 "name",
                 "domain",
+                "dependency-scope",
                 "url",
                 "request",
                 "response"

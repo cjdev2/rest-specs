@@ -37,11 +37,11 @@
  */
 package cj.restspecifications.core;
 
-import static java.util.Arrays.asList;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.sameInstance;
-import static org.junit.Assert.*;
+import cj.restspecs.core.RestSpec;
+import cj.restspecs.core.io.Loader;
+import cj.restspecs.core.io.StringLoader;
+import cj.restspecs.core.model.Header;
+import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -50,16 +50,45 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 
-import cj.restspecs.core.io.StringLoader;
-import org.junit.Assert;
-import org.junit.Test;
-
-import cj.restspecs.core.RestSpec;
-import cj.restspecs.core.io.Loader;
-import cj.restspecs.core.model.Header;
+import static java.util.Arrays.asList;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.sameInstance;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class RestSpecTest {
 
+    @Test
+    public void allowDependencyScopeField() {
+        // given
+        final String specJson =
+                "{\n" +
+                        "    \"name\":\"some spec\",\n" +
+                        "    \"domain\":\"Relationships\",\n" +
+                        "    \"dependency-scope\":[ \"insights\", \"relationships:partners\" ],\n" +
+                        "    \"url\":\"/some/path\",\n" +
+                        "    \"request\": {\n" +
+                        "        \"method\": \"GET\"\n" +
+                        "    },\n" +
+                        "    \"response\":{\n" +
+                        "        \"statusCode\": 404\n" +
+                        "    }\n" +
+                        "}";
+        Loader dummyLoader = new Loader() {
+            public InputStream load(String name) {
+                return new ByteArrayInputStream(specJson.getBytes());
+            }
+        };
+
+        // when
+        RestSpec spec = new RestSpec("a.spec.json", dummyLoader);
+
+        // then
+        assertTrue("Did not throw exception on dependency-scope field", true);
+    }
 
     @Test
     public void allowDomainField() {
