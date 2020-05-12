@@ -23,7 +23,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <httpobjects-version>0.13.0</httpobjects-version>
-    <jackson-version>2.5.3</jackson-version>
+    <jackson-version>2.11.0</jackson-version>
   </properties>
   <build>
     <sourceDirectory>${basedir}/src/main/scala</sourceDirectory>
