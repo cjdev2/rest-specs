@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.cj.restspecs</groupId>
   <artifactId>rest-specs-pom</artifactId>
-  <version>10.0.6</version>
+  <version>10.0.7</version>
   <packaging>pom</packaging>
   <name>RESTSPECS :: Modules Parent</name>
   <url>https://github.com/cjdev/rest-specs.git</url>
